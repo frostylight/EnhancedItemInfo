@@ -1,0 +1,136 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ForceCopy>false</ForceCopy>
+		<LangVersion>14.0</LangVersion>
+
+		<!-- 游戏设置 -->
+		<DuckovPath>E:\SteamLibrary\steamapps\common\Escape from Duckov\</DuckovPath>
+		<SteamWorkShop>E:\SteamLibrary\steamapps\workshop\content\3167020\</SteamWorkShop>
+		<DuckovManagedPath>$(DuckovPath)Duckov_Data\Managed\</DuckovManagedPath>
+		<DuckovModPath>$(DuckovPath)Duckov_Data\Mods\</DuckovModPath>
+
+		<!-- 项目设置 -->
+		<ModName>$(MSBuildProjectName)</ModName>
+		<ModVersionFile>$(ProjectDir)Core\VersionInfo.cs</ModVersionFile>
+		<ModLocalDir>$(ProjectDir)$(ModName)</ModLocalDir>
+		<ModGameDir>$(DuckovModPath)$(ModName)</ModGameDir>
+
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<!-- 游戏本体引用 -->
+		<Reference Include="$(DuckovManagedPath)TeamSoda.*">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="$(DuckovManagedPath)ItemStatsSystem.dll">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="$(DuckovManagedPath)SodaLocalization.dll">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="$(DuckovManagedPath)Unity*">
+			<Private>False</Private>
+		</Reference>
+
+		<!-- 依赖引用 -->
+		<Reference Include="0Harmony">
+			<HintPath>$(SteamWorkShop)3589088839\0Harmony.dll</HintPath>
+		</Reference>
+
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <Folder Include="EnhancedItemInfo\" />
+	</ItemGroup>
+
+	<!-- 以下复制自JMCLib模板 -->
+	<!-- 从版本文件提取版本信息并注入DLL -->
+	<Target Name="ExtractVersion" BeforeTargets="BeforeBuild">
+		<!-- 禁用默认生成 -->
+		<PropertyGroup>
+			<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		</PropertyGroup>
+		
+		<!-- 读取文件 -->
+		<ReadLinesFromFile File="$(ModVersionFile)">
+			<Output TaskParameter="Lines" ItemName="VersionLinesRaw" />
+		</ReadLinesFromFile>
+
+		<!-- 把行合并为一个字符串 -->
+		<PropertyGroup>
+			<VersionFileContent>@(VersionLinesRaw, ' ')</VersionFileContent>
+		</PropertyGroup>
+
+		<!-- 用 Regex 提取版本号，加入 Trim() -->
+		<PropertyGroup>
+			<ExtractedVersion>$([System.Text.RegularExpressions.Regex]::Match('$(VersionFileContent)', 'Version\s*=\s*\"([0-9\.]+)\"').Groups[1].Value.Trim())</ExtractedVersion>
+			<ExtractedAuthor>$([System.Text.RegularExpressions.Regex]::Match('$(VersionFileContent)', 'Author\s*=\s*\"([^"]+)\"').Groups[1].Value.Trim())</ExtractedAuthor>
+		</PropertyGroup>
+
+		<Message Text="📌 提取到的版本号: $(ExtractedVersion)" Importance="High" />
+		<Message Text="📌 提取到的作者: $(ExtractedAuthor)" Importance="High" />
+
+		<Error Condition="'$(ExtractedVersion)' == ''" Text="❌ 无法从 VersionInfo.cs 中提取版本号!" />
+		<Error Condition="'$(ExtractedAuthor)' == ''" Text="❌ 无法从 VersionInfo.cs 中提取作者!" />
+
+		<!-- ⭐ 用 Property 拼出全部代码，不使用 ItemGroup -->
+		<PropertyGroup>
+			<AutoAssemblyInfoText>
+				[assembly: System.Reflection.AssemblyVersion("$(ExtractedVersion).0")]
+				[assembly: System.Reflection.AssemblyFileVersion("$(ExtractedVersion).0")]
+				[assembly: System.Reflection.AssemblyInformationalVersion("$(ExtractedVersion)")]
+
+				[assembly: System.Reflection.AssemblyTitle("Duckov mod $(ModName) by $(ExtractedAuthor)")]
+				[assembly: System.Reflection.AssemblyDescription("Duckov mod $(ModName) by $(ExtractedAuthor)")]
+				[assembly: System.Reflection.AssemblyProduct("$(ModName)")]
+				[assembly: System.Reflection.AssemblyCompany("$(ExtractedAuthor)")]
+				[assembly: System.Reflection.AssemblyMetadata("ModAuthor", "$(ExtractedAuthor)")]
+				[assembly: System.Reflection.AssemblyMetadata("ModName", "$(ModName)")]
+			</AutoAssemblyInfoText>
+		</PropertyGroup>
+
+		<!-- ⭐ 一次性输出，不会被 MSBuild 自动加换行或缩进 -->
+		<WriteLinesToFile File="$(IntermediateOutputPath)AutoVersionInfo.g.cs" Lines="$(AutoAssemblyInfoText)" Overwrite="true" />
+
+		<ItemGroup>
+			<Compile Include="$(IntermediateOutputPath)AutoVersionInfo.g.cs" />
+		</ItemGroup>
+
+	</Target>
+
+	<!-- 构建后自动复制 DLL -->
+	<Target Name="PostBuild" AfterTargets="Build">
+		<!-- 确保目标文件夹存在 -->
+		<MakeDir Directories="$(ModLocalDir)" />
+		<MakeDir Directories="$(ModGameDir)" />
+
+		<!-- 复制刚编译的 DLL -->
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModLocalDir)" />
+
+		<!-- 根据 ForceCopy 决定 robocopy 参数 -->
+		<PropertyGroup>
+			<!-- 如果 ForceCopy 为 true，不使用 /XO /XN /XC；否则增量复制 -->
+			<RoboArgs Condition="'$(ForceCopy)' == 'true'">/E /R:0 /W:0 /XD bin obj</RoboArgs>
+			<RoboArgs Condition="'$(ForceCopy)' != 'true'">/E /XO /XC /R:0 /W:0 /XD bin obj</RoboArgs>
+		</PropertyGroup>
+
+		<Message Text="开始复制 mod 文件..." Importance="High" />
+		<Message Text="🔧 ForceCopy = $(ForceCopy)" Importance="High" />
+		<Exec Command="robocopy &quot;$(ModLocalDir)&quot; &quot;$(ModGameDir)&quot; $(RoboArgs)" ConsoleToMSBuild="true" IgnoreExitCode="true" StandardOutputImportance="High">
+			<Output TaskParameter="ExitCode" PropertyName="RoboExitCode" />
+		</Exec>
+
+		<!--  处理 robocopy 的返回码，容忍 0–3 -->
+		<Message Text="Robocopy 退出代码: $(RoboExitCode)" Importance="High" />
+		<Error Condition="$(RoboExitCode) &gt; 3" Text="❌ Robocopy 复制失败（代码 $(RoboExitCode)）！" />
+
+		<!--  成功提示 -->
+		<Message Condition="$(RoboExitCode) == 0" Text="✅ 没有需要更新的文件，一切都是最新的。" Importance="High" />
+		<Message Condition="$(RoboExitCode) == 1" Text="📁 已复制新的文件。" Importance="High" />
+		<Message Condition="$(RoboExitCode) == 2" Text="📝 文件属性已更新。" Importance="High" />
+		<Message Condition="$(RoboExitCode) == 3" Text="🔄 文件和属性都有更新。" Importance="High" />
+	</Target>
+
+</Project>
