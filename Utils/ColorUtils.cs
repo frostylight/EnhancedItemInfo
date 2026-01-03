@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace EnhancedItemInfo.Core.Utils;
+namespace EnhancedItemInfo.Utils;
 
 public static class ColorUtils {
     public static Color RGBA(uint r, uint g, uint b, uint a = 255) => new(r / 255f, g / 255f, b / 255f, a / 255f);

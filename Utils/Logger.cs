@@ -1,7 +1,8 @@
+using EnhancedItemInfo.Core;
 using System;
 using System.Text;
 
-namespace EnhancedItemInfo.Core.Utils;
+namespace EnhancedItemInfo.Utils;
 
 public static class Logger {
     public enum LogLevel {

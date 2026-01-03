@@ -1,10 +1,12 @@
 using Duckov.Economy;
 using Duckov.Utilities;
+using EnhancedItemInfo.Core;
+using EnhancedItemInfo.Patchs;
 using ItemStatsSystem;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EnhancedItemInfo.Core.Utils;
+namespace EnhancedItemInfo.Utils;
 
 public static class ItemUtils {
     /// <summary>
@@ -12,10 +14,11 @@ public static class ItemUtils {
     /// </summary>
     /// <param name="typeID">物品ID</param>
     /// <returns>inStorage在仓库数量；onPlayer在玩家与宠物身上</returns>
-    public static (int inStorage, int onPlayer) GetItemCount(int typeID) {
+    public static (int inStorage, int onPlayer, int onPet) GetItemCount(int typeID) {
         int inStorage = GetItemCountInStorage(typeID);
         int onPlayer = GetItemCountOnPlayer(typeID);
-        return (inStorage, onPlayer);
+        int onPet = GetItemCountOnPet(typeID);
+        return (inStorage, onPlayer, onPet);
     }
     /// <summary>
     /// 获取特定ID物品在仓库的数量 <br/>
@@ -31,15 +34,14 @@ public static class ItemUtils {
         return playerStorage.FindAll(item => item != null && item.TypeID == typeID).Sum(item => item.StackCount);
     }
     /// <summary>
-    /// 获取特定ID物品在玩家与宠物身上的数量 <br/>
+    /// 获取特定ID物品在玩家背包的数量 <br/>
     /// 不包括身上装备和插槽内物品
     /// </summary>
     /// <param name="typeID">物品ID</param>
     public static int GetItemCountOnPlayer(int typeID) {
-        int count = 0;
         Inventory? characterInventory = LevelManager.Instance?.MainCharacter?.CharacterItem?.Inventory;
         if (characterInventory != null) {
-            count += characterInventory.FindAll(item => item != null && item.TypeID == typeID).Sum(item => item.StackCount);
+            return characterInventory.FindAll(item => item != null && item.TypeID == typeID).Sum(item => item.StackCount);
         }
         else {
             Logger.Warn("Null player inventory");
@@ -55,9 +57,16 @@ public static class ItemUtils {
             }
 #endif
         }
+        return 0;
+    }
+    /// <summary>
+    /// 获取特定ID物品在狗子身上的数量
+    /// </summary>
+    /// <param name="typeID">物品ID</param>
+    public static int GetItemCountOnPet(int typeID) {
         Inventory? petInventory = LevelManager.Instance?.PetProxy?.Inventory;
         if (petInventory != null) {
-            count += petInventory.FindAll(item => item != null && item.TypeID == typeID).Sum(item => item.StackCount);
+            return petInventory.FindAll(item => item != null && item.TypeID == typeID).Sum(item => item.StackCount);
         }
         else {
             Logger.Warn("Null pet inventory");
@@ -70,7 +79,26 @@ public static class ItemUtils {
             }
 #endif
         }
-        return count;
+        return 0;
+    }
+
+    public static int GetQuestRequirement(int typeID) {
+        if (Patch_QuestManager_SetupSaveData.itemQuestCount.TryGetValue(typeID, out int requirement)) {
+            return requirement;
+        }
+        return 0;
+    }
+    public static long GetBuildingRequirement(int typeID) {
+        if (Patch_BuildingManager.itemBuildingCount.TryGetValue(typeID, out long requirement)) {
+            return requirement;
+        }
+        return 0;
+    }
+    public static long GetPerkRequirement(int typeID) {
+        if (Patch_PerkTree_SetupSaveData.itemPerkCount.TryGetValue(typeID, out long requirement)) {
+            return requirement;
+        }
+        return 0;
     }
 
     public static Cost.ItemEntry[] GetDecomposeItems(int typeID) {

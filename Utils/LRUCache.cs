@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace EnhancedItemInfo.Core.Utils;
+namespace EnhancedItemInfo.Utils;
 
 /// <summary>
 /// LRU缓存的Dictionary，效率存疑

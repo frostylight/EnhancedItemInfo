@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace EnhancedItemInfo.Core.Utils;
+namespace EnhancedItemInfo.Utils;
 
 public class TextUIHandler<TSelf> where TSelf : TextUIHandler<TSelf> {
     protected TextMeshProUGUI? textui;

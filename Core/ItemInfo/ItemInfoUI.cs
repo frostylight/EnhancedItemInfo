@@ -42,9 +42,7 @@ public class ItemInfoUI {
         return this;
     }
     public ItemInfoUI SetParent(Transform parent, bool worldPositionStays = true) {
-        if (hideOnce) {
-            return this;
-        }
+        // 保证文本相对位置
         ItemInfoText.transform.SetParent(parent, worldPositionStays);
         return this;
     }

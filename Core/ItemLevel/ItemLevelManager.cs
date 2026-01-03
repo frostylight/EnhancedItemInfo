@@ -1,58 +1,40 @@
-using EnhancedItemInfo.Core.Utils;
-using ItemStatsSystem;
-using System.Collections.Generic;
+using Duckov.UI;
+using EnhancedItemInfo.Patchs;
+using EnhancedItemInfo.Utils;
+using UnityEngine.UI;
 
 namespace EnhancedItemInfo.Core.ItemLevel;
 
 [SubModule]
 internal static class ItemLevelManager {
     public static void Init() {
-        Logger.Info("ItemLevel is registered");
-        ModBehaviour.OnSetupSubmodule += OnSetup;
-        ModBehaviour.OnDeactivateSubModule += OnDeactivate;
+        Logger.Info($"{nameof(ItemLevelManager)} is registered");
+
+        ModBehaviour.OnSetup += OnSetup;
+        ModBehaviour.OnDeactivate += OnDeactivate;
     }
-
     public static void OnSetup() {
-        Logger.Info($"ItemLevel is enabled");
+        Logger.Info($"{nameof(ItemLevelManager)} is enabled");
 
-        InteractableLootbox.OnStartLoot += OnStartLoot;
-        InteractableLootbox.OnStopLoot += OnStopLoot;
-        PatchItemDisplaySetup.OnItemDisplayReset += PatchItemDisplaySetup.ResetItemDisplayColor;
-        PatchItemDisplaySetup.OnItemDisplayShow += PatchItemDisplaySetup.SetItemDisplayColor;
-        PatchItemMetaDisplaySetup.OnItemMetaDisplayShow += PatchItemMetaDisplaySetup.SetItemMetaDisplayColor;
+        Patch_ItemDisplay_Setup.OnItemDisplayReset += OnItemDisplayReset;
+        Patch_ItemDisplay_Setup.OnItemDisplayShow += OnItemDisplayShow;
+        Patch_ItemMetaDisplay_Setup.OnItemMetaDisplayShow += OnItemMetaDisplayShow;
     }
     public static void OnDeactivate() {
-        Logger.Info($"ItemLevel is disabled");
+        Logger.Info($"{nameof(ItemLevelManager)} is disabled");
 
-        InteractableLootbox.OnStartLoot -= OnStartLoot;
-        InteractableLootbox.OnStopLoot -= OnStopLoot;
-        PatchItemDisplaySetup.OnItemDisplayReset -= PatchItemDisplaySetup.ResetItemDisplayColor;
-        PatchItemDisplaySetup.OnItemDisplayShow -= PatchItemDisplaySetup.SetItemDisplayColor;
-        PatchItemMetaDisplaySetup.OnItemMetaDisplayShow -= PatchItemMetaDisplaySetup.SetItemMetaDisplayColor;
-        OnStopLoot(null);
+        Patch_ItemDisplay_Setup.OnItemDisplayReset -= OnItemDisplayReset;
+        Patch_ItemDisplay_Setup.OnItemDisplayShow -= OnItemDisplayShow;
+        Patch_ItemMetaDisplay_Setup.OnItemMetaDisplayShow -= OnItemMetaDisplayShow;
     }
 
-    public static List<Item> ItemInspecting = [];
-    public static void OnStartLoot(InteractableLootbox? lootbox) {
-        if (lootbox == null) {
-            return;
-        }
-        Inventory? inventory = lootbox.Inventory;
-        if (inventory == null || !inventory.NeedInspection || inventory.hasBeenInspectedInLootBox) {
-            return;
-        }
-        inventory.FindAll(item => item != null && !item.Inspected)
-            .ForEach(item => {
-                item.onInspectionStateChanged += PatchItemDisplaySetup.OnInspectionStateChanged;
-                ItemInspecting.Add(item);
-            });
+    internal static void OnItemDisplayReset(ItemDisplay itemDisplay) {
+        itemDisplay.transform?.Find("BG")?.GetComponent<Image>()?.color = ColorUtils.transparent;
     }
-    public static void OnStopLoot(InteractableLootbox? lootbox) {
-        ItemInspecting.ForEach(item => {
-            item.onInspectionStateChanged -= PatchItemDisplaySetup.OnInspectionStateChanged;
-            PatchItemDisplaySetup.ItemDisplayMap.Remove(item);
-        });
-        ItemInspecting.Clear();
-        PatchItemDisplaySetup.ItemDisplayMap.Clear();
+    internal static void OnItemDisplayShow(ItemDisplay itemDisplay) {
+        itemDisplay.transform?.Find("BG")?.GetComponent<Image>()?.color = itemDisplay.Target.GetLevelColor();
+    }
+    internal static void OnItemMetaDisplayShow(ItemMetaDisplay itemMetaDisplay) {
+        itemMetaDisplay.transform?.Find("BG")?.GetComponent<Image>()?.color = itemMetaDisplay.GetMetaData().GetLevelColor();
     }
 }

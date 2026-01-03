@@ -4,9 +4,20 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace EnhancedItemInfo.Core.Utils;
+namespace EnhancedItemInfo.Utils;
 
 public static class ItemLevelColorUtils {
+    public enum ItemColorLevel {
+        Transparent = 0,
+        White = 1,
+        Green = 2,
+        Blue = 3,
+        Purple = 4,
+        Orange = 5,
+        LightRed = 6,
+        Red = 7
+    }
+
     /// <summary>
     /// 每种物品稀有度颜色的缓存
     /// </summary>

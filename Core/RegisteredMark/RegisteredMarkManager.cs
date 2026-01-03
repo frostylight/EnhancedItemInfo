@@ -1,35 +1,35 @@
 using Duckov.UI;
-using EnhancedItemInfo.Core.ItemLevel;
-using EnhancedItemInfo.Core.Utils;
+using EnhancedItemInfo.Patchs;
+using EnhancedItemInfo.Utils;
 using TMPro;
 using UnityEngine;
-using Logger = EnhancedItemInfo.Core.Utils.Logger;
+using Logger = EnhancedItemInfo.Utils.Logger;
 
 namespace EnhancedItemInfo.Core.RegisteredMark;
 
 [SubModule]
 internal static class RegisteredMarkManager {
     public static void Init() {
-        Logger.Info("RegisteredMark is registered");
-        ModBehaviour.OnSetupSubmodule += OnSetup;
-        ModBehaviour.OnDeactivateSubModule += OnDeactivate;
+        Logger.Info($"{nameof(RegisteredMarkManager)} is registered");
+
+        ModBehaviour.OnSetup += OnSetup;
+        ModBehaviour.OnDeactivate += OnDeactivate;
     }
-
     public static void OnSetup() {
-        Logger.Info("RegisteredMark is enabled");
+        Logger.Info($"{nameof(RegisteredMarkManager)} is enabled");
 
-        PatchItemDisplaySetup.OnItemDisplayReset += OnItemDisplayReset;
-        PatchItemDisplaySetup.OnItemDisplayShow += OnItemDisplayShow;
-        PatchItemMetaDisplaySetup.OnItemMetaDisplayShow += OnItemMetaDisplayShow;
-        PatchItemAmountDisplaySetup.OnItemAmountDisplayShow += OnItemAmountDisplayShow;
+        Patch_ItemDisplay_Setup.OnItemDisplayReset += OnItemDisplayReset;
+        Patch_ItemDisplay_Setup.OnItemDisplayShow += OnItemDisplayShow;
+        Patch_ItemMetaDisplay_Setup.OnItemMetaDisplayShow += OnItemMetaDisplayShow;
+        Patch_ItemAmountDisplay_Setup.OnItemAmountDisplayShow += OnItemAmountDisplayShow;
     }
     public static void OnDeactivate() {
-        Logger.Info("RegisteredMark is disabled");
+        Logger.Info($"{nameof(RegisteredMarkManager)} is disabled");
 
-        PatchItemDisplaySetup.OnItemDisplayReset -= OnItemDisplayReset;
-        PatchItemDisplaySetup.OnItemDisplayShow -= OnItemDisplayShow;
-        PatchItemMetaDisplaySetup.OnItemMetaDisplayShow -= OnItemMetaDisplayShow;
-        PatchItemAmountDisplaySetup.OnItemAmountDisplayShow -= OnItemAmountDisplayShow;
+        Patch_ItemDisplay_Setup.OnItemDisplayReset -= OnItemDisplayReset;
+        Patch_ItemDisplay_Setup.OnItemDisplayShow -= OnItemDisplayShow;
+        Patch_ItemMetaDisplay_Setup.OnItemMetaDisplayShow -= OnItemMetaDisplayShow;
+        Patch_ItemAmountDisplay_Setup.OnItemAmountDisplayShow -= OnItemAmountDisplayShow;
     }
 
     public static void SetupMarkBackground(TextMeshProUGUI textui) {

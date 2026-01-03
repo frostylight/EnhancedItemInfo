@@ -1,5 +1,5 @@
 using EnhancedItemInfo.Core;
-using EnhancedItemInfo.Core.Utils;
+using EnhancedItemInfo.Utils;
 using HarmonyLib;
 using System;
 using System.Reflection;
@@ -13,26 +13,25 @@ public class ModBehaviour: Duckov.Modding.ModBehaviour {
     public static readonly Assembly assembly = Assembly.GetExecutingAssembly();
 
     static bool Inited = false;
-    internal static event Action? OnSetupSubmodule = null;
-    internal static event Action? OnDeactivateSubModule = null;
+    internal static event Action? OnSetup = null;
+    internal static event Action? OnDeactivate = null;
 
     static void Init() {
         if (Inited) {
             return;
         }
-        Logger.Info("Init submodule");
+        Logger.Info("Init submodule & patch");
         foreach (var type in AccessTools.GetTypesFromAssembly(assembly)) {
             if (type == null) {
                 continue;
             }
-            if (!type.IsDefined(typeof(SubModuleAttribute), false)) {
-                continue;
-            }
-            try {
-                AccessTools.Method(type, "Init").Invoke(null, []);
-            }
-            catch (Exception ex) {
-                Logger.Error($"Unable to Init {type.FullName}", ex);
+            if (type.IsDefined(typeof(SubModuleAttribute), false) || type.IsDefined(typeof(PatchNeedSetupAttribute), false)) {
+                try {
+                    AccessTools.Method(type, "Init").Invoke(null, []);
+                }
+                catch (Exception ex) {
+                    Logger.Error($"Unable to Init {type.FullName}", ex);
+                }
             }
         }
         Inited = true;
@@ -45,7 +44,7 @@ public class ModBehaviour: Duckov.Modding.ModBehaviour {
 
         Logger.Info("Loading submodule");
 
-        OnSetupSubmodule?.Invoke();
+        OnSetup?.Invoke();
 
         try {
             harmony = new Harmony(ModId);
@@ -60,7 +59,7 @@ public class ModBehaviour: Duckov.Modding.ModBehaviour {
 
         Logger.Info("Disabling submodule");
 
-        OnDeactivateSubModule?.Invoke();
+        OnDeactivate?.Invoke();
 
         try {
             harmony?.UnpatchAll(ModId);
