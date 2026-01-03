@@ -50,7 +50,7 @@ internal static class ItemInfoManager {
         if (total == 0) {
             return ItemCountText.HideOnce();
         }
-        return ItemCountText.SetText($"已有{total} = 背包{onPlayer} + 宠物{onPet} + 仓库{inStorage}");
+        return ItemCountText.SetText(DetailedCounter.JoinIf($"已有 {total}", ("仓库", inStorage), ("背包", onPlayer), ("宠物", onPet)));
     }
     public static ItemInfoUI SetupItemRequirement(int typeID) {
         int quest = ItemUtils.GetQuestRequirement(typeID);
@@ -60,7 +60,7 @@ internal static class ItemInfoManager {
         if (total == 0) {
             return ItemRequirementText.HideOnce();
         }
-        return ItemRequirementText.SetText($"需求{total} = 任务{quest} + 强化{perk} + 建筑{building}");
+        return ItemRequirementText.SetText(DetailedCounter.JoinIf($"需求 {total}", ("任务", quest), ("强化", perk), ("建筑", building)));
     }
     public static ItemInfoUI SetupItemDecompose(int typeID) {
         var decomposeItems = ItemUtils.GetDecomposeItems(typeID);
@@ -86,9 +86,9 @@ internal static class ItemInfoManager {
         SetupItemRequirement(data.id).SetParent(parent).SetColor(color).Show();
 
         Item template = ItemAssetsCollection.GetPrefab(data.id);
-        ItemWeightText.SetParent(parent).SetText($"单位重量{template.UnitSelfWeight:0.##}kg").SetColor(color).Show();
+        ItemWeightText.SetParent(parent).SetText($"单位重量 {template.UnitSelfWeight:0.##}kg").SetColor(color).Show();
 
-        ItemValueText.SetParent(parent).SetText($"${data.priceEach / 2}").SetColor(color).Show();
+        ItemValueText.SetParent(parent).SetText($"${data.priceEach / 2f:0.##}").SetColor(color).Show();
         SetupItemDecompose(data.id).SetParent(parent).SetColor(color).Show();
     }
     public static void OnSetupItemHoveringUI(ItemHoveringUI uiInstance, Item? item) {
@@ -103,8 +103,8 @@ internal static class ItemInfoManager {
 
         SetupItemCount(item.TypeID).SetParent(parent).SetColor(color).Show();
         SetupItemRequirement(item.TypeID).SetParent(parent).SetColor(color).Show();
-        ItemWeightText.SetParent(parent).SetText($"总重{item.TotalWeight:0.##}kg").AppendTextIf(item.Slots != null && item.Slots.Count > 0, $"\t自重{item.SelfWeight:0.##}kg").SetColor(color).Show();
-        ItemValueText.SetParent(parent).SetText($"${item.GetTotalRawValue() / 2}").AppendTextIf(item.Stackable, $" ({item.Value / 2})").SetColor(color).Show();
+        ItemWeightText.SetParent(parent).SetText($"总重 {item.TotalWeight:0.##}kg").AppendTextIf(item.Slots != null && item.Slots.Count > 0, $"\t自重 {item.SelfWeight:0.##}kg").SetColor(color).Show();
+        ItemValueText.SetParent(parent).SetText($"${item.GetTotalRawValue() / 2f:0.##}").AppendTextIf(item.Stackable, $" ({item.Value / 2f:0.##})").SetColor(color).Show();
         SetupItemDecompose(item.TypeID).SetParent(parent).SetColor(color).Show();
     }
 }

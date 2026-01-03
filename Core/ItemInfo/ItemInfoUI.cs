@@ -42,8 +42,12 @@ public class ItemInfoUI {
         return this;
     }
     public ItemInfoUI SetParent(Transform parent, bool worldPositionStays = true) {
-        // 保证文本相对位置
+        if (hideOnce) {
+            return this;
+        }
         ItemInfoText.transform.SetParent(parent, worldPositionStays);
+        // 保证文本相对位置
+        ItemInfoText.transform.SetAsLastSibling();
         return this;
     }
     public ItemInfoUI SetColor(Color color) {
