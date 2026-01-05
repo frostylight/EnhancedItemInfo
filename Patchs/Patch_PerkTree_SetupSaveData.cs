@@ -1,4 +1,5 @@
 using Duckov.PerkTrees;
+using EnhancedItemInfo.Attributes;
 using EnhancedItemInfo.Utils;
 using HarmonyLib;
 using ItemStatsSystem;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 
 namespace EnhancedItemInfo.Patchs;
 
+[Patch]
 [HarmonyPatch(typeof(PerkTree), nameof(PerkTree.SetupSaveData))]
 internal static class Patch_PerkTree_SetupSaveData {
     internal static readonly Dictionary<int, long> itemPerkCount = [];

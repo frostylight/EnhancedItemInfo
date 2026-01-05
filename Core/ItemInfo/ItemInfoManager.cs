@@ -1,4 +1,5 @@
 using Duckov.UI;
+using EnhancedItemInfo.Attributes;
 using EnhancedItemInfo.Utils;
 using HarmonyLib;
 using ItemStatsSystem;
@@ -9,7 +10,7 @@ using Logger = EnhancedItemInfo.Utils.Logger;
 
 namespace EnhancedItemInfo.Core.ItemInfo;
 
-[SubModule]
+[NeedSetup]
 internal static class ItemInfoManager {
     public static void Init() {
         Logger.Info($"{nameof(ItemInfoManager)} is registered");
@@ -28,9 +29,11 @@ internal static class ItemInfoManager {
 
         ItemHoveringUI.onSetupItem -= OnSetupItemHoveringUI;
         ItemHoveringUI.onSetupMeta -= OnSetupMetaHoveringUI;
+        DestroyAllText();
     }
 
     static readonly ItemInfoUI ItemCountText = new();
+    static readonly ItemInfoUI ItemDurabilityText = new();
     static readonly ItemInfoUI ItemRequirementText = new();
     static readonly ItemInfoUI ItemWeightText = new();
     static readonly ItemInfoUI ItemValueText = new();
@@ -41,7 +44,16 @@ internal static class ItemInfoManager {
         ItemValueText.Hide();
         ItemWeightText.Hide();
         ItemRequirementText.Hide();
+        ItemDurabilityText.Hide();
         ItemCountText.Hide();
+    }
+    public static void DestroyAllText() {
+        ItemDecomposeText.Destroy();
+        ItemValueText.Destroy();
+        ItemWeightText.Destroy();
+        ItemRequirementText.Destroy();
+        ItemDurabilityText.Destroy();
+        ItemCountText.Destroy();
     }
 
     public static ItemInfoUI SetupItemCount(int typeID) {
@@ -50,7 +62,14 @@ internal static class ItemInfoManager {
         if (total == 0) {
             return ItemCountText.HideOnce();
         }
-        return ItemCountText.SetText(DetailedCounter.JoinIf($"已有 {total}", ("仓库", inStorage), ("背包", onPlayer), ("宠物", onPet)));
+        return ItemCountText.UseCounter($"已有 {total}").AddPart("仓库", inStorage).AddPart("背包", onPlayer).AddPart("宠物", onPet);
+    }
+    public static ItemInfoUI SetupItemDurability(Item item) {
+        Logger.Debug($"Setup {item.DisplayName}");
+        if (!item.UseDurability) {
+            return ItemDurabilityText.HideOnce();
+        }
+        return ItemDurabilityText.SetText($"耐久 {item.Durability} / {item.MaxDurabilityWithLoss}");
     }
     public static ItemInfoUI SetupItemRequirement(int typeID) {
         int quest = ItemUtils.GetQuestRequirement(typeID);
@@ -60,17 +79,17 @@ internal static class ItemInfoManager {
         if (total == 0) {
             return ItemRequirementText.HideOnce();
         }
-        return ItemRequirementText.SetText(DetailedCounter.JoinIf($"需求 {total}", ("任务", quest), ("强化", perk), ("建筑", building)));
+        return ItemRequirementText.UseCounter($"需求 {total}").AddPart("任务", quest).AddPart("强化", perk).AddPart("建筑", building);
     }
     public static ItemInfoUI SetupItemDecompose(int typeID) {
         var decomposeItems = ItemUtils.GetDecomposeItems(typeID);
         if (decomposeItems.Length == 0) {
             return ItemDecomposeText.HideOnce();
         }
-        StringBuilder stringBuilder = new("分解：", decomposeItems.Length + 1);
+        StringBuilder stringBuilder = new("分解:\n", decomposeItems.Length + 1);
         foreach (var entry in decomposeItems) {
             var itemMetaData = ItemAssetsCollection.GetMetaData(entry.id);
-            stringBuilder.Append($"\n\t{entry.amount}x {itemMetaData.DisplayName}");
+            stringBuilder.AppendLine($"<indent=1em>{entry.amount}x {itemMetaData.DisplayName}</indent>");
         }
         return ItemDecomposeText.SetText(stringBuilder.ToString());
     }
@@ -102,6 +121,7 @@ internal static class ItemInfoManager {
         Traverse.Create(uiInstance).Field("itemName").GetValue<TextMeshProUGUI>()?.color = color;
 
         SetupItemCount(item.TypeID).SetParent(parent).SetColor(color).Show();
+        SetupItemDurability(item).SetParent(parent).SetColor(color).Show();
         SetupItemRequirement(item.TypeID).SetParent(parent).SetColor(color).Show();
         ItemWeightText.SetParent(parent).SetText($"总重 {item.TotalWeight:0.##}kg").AppendTextIf(item.Slots != null && item.Slots.Count > 0, $"\t自重 {item.SelfWeight:0.##}kg").SetColor(color).Show();
         ItemValueText.SetParent(parent).SetText($"${item.GetTotalRawValue() / 2f:0.##}").AppendTextIf(item.Stackable, $" ({item.Value / 2f:0.##})").SetColor(color).Show();

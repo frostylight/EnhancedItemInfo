@@ -24,4 +24,6 @@ public static class Constant {
     public static Color Orange = ColorUtils.RGBA(0xffdc24_96);
     public static Color LightRed = ColorUtils.RGBA(0xff5858_96);
     public static Color Red = ColorUtils.RGBA(0xbb0000_96);
+
+    public const string durabilityUsageDescriptionKey = "Usage_Durability";
 }

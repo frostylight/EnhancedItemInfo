@@ -1,4 +1,5 @@
 using Duckov.UI;
+using EnhancedItemInfo.Attributes;
 using EnhancedItemInfo.Utils;
 using HarmonyLib;
 using ItemStatsSystem;
@@ -8,7 +9,8 @@ using UnityEngine.UI;
 
 namespace EnhancedItemInfo.Patchs;
 
-[PatchNeedSetup]
+[Patch]
+[NeedSetup]
 [HarmonyPatch(typeof(ItemDisplay), nameof(ItemDisplay.Setup))]
 public static class Patch_ItemDisplay_Setup {
     public static event Action<ItemDisplay>? OnItemDisplayReset = null;

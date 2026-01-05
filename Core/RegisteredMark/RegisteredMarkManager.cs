@@ -1,4 +1,5 @@
 using Duckov.UI;
+using EnhancedItemInfo.Attributes;
 using EnhancedItemInfo.Patchs;
 using EnhancedItemInfo.Utils;
 using TMPro;
@@ -7,7 +8,7 @@ using Logger = EnhancedItemInfo.Utils.Logger;
 
 namespace EnhancedItemInfo.Core.RegisteredMark;
 
-[SubModule]
+[NeedSetup]
 internal static class RegisteredMarkManager {
     public static void Init() {
         Logger.Info($"{nameof(RegisteredMarkManager)} is registered");

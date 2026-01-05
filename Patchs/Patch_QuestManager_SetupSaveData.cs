@@ -1,12 +1,13 @@
 using Duckov.Quests;
 using Duckov.Quests.Tasks;
+using EnhancedItemInfo.Attributes;
 using EnhancedItemInfo.Utils;
 using HarmonyLib;
-using ItemStatsSystem;
 using System.Collections.Generic;
 
 namespace EnhancedItemInfo.Patchs;
 
+[Patch]
 [HarmonyPatch(typeof(QuestManager), nameof(QuestManager.SetupSaveData))]
 internal class Patch_QuestManager_SetupSaveData {
     // 每种物品的任务需求（active + everInspected）
@@ -32,10 +33,6 @@ internal class Patch_QuestManager_SetupSaveData {
         int amount = taskInstance.Field("amount").GetValue<int>();
         int requireAmount = taskInstance.Field("requireAmount").GetValue<int>();
         taskRemainedAmount.TryGetValue(task.ID, out int remainedAmount);
-#if DEBUG
-        var itemMetaData = ItemAssetsCollection.GetMetaData(itemTypeID);
-        Logger.Debug($"\t\tSubmit {itemMetaData.DisplayName} {amount}/{requireAmount}");
-#endif
         if (task.IsFinished()) {
             if (remainedAmount != 0) {
                 itemQuestCount[itemTypeID] -= remainedAmount;
@@ -51,10 +48,6 @@ internal class Patch_QuestManager_SetupSaveData {
         int amount = taskInstance.Field("submittedAmount").GetValue<int>();
         int requireAmount = taskInstance.Field("requireAmount").GetValue<int>();
         taskRemainedAmount.TryGetValue(task.ID, out int remainedAmount);
-#if DEBUG
-        var itemMetaData = ItemAssetsCollection.GetMetaData(itemTypeID);
-        Logger.Debug($"\t\tSubmit {itemMetaData.DisplayName} {amount}/{requireAmount}");
-#endif
         if (task.IsFinished()) {
             if (remainedAmount != 0) {
                 itemQuestCount[itemTypeID] -= remainedAmount;
@@ -65,7 +58,6 @@ internal class Patch_QuestManager_SetupSaveData {
         task.onStatusChanged += OnTaskUpdated;
     }
     static void HandleTask(Task task) {
-        Logger.Debug($"\tHandle task {task.ID} {task.name}");
         switch (task) {
             case QuestTask_UseItem useItem: {
                 HandleUseItemTask(useItem);
@@ -82,7 +74,6 @@ internal class Patch_QuestManager_SetupSaveData {
         HandleTask(task);
     }
     static void HandleQuest(Quest quest) {
-        Logger.Debug($"Handle Quest {quest.ID} {quest.DisplayName} {quest.name} {quest.LockInDemo}");
         foreach (Task? task in quest.Tasks) {
             if (task == null || task.IsFinished()) {
                 continue;

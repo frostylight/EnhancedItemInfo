@@ -2,6 +2,7 @@ using EnhancedItemInfo.Core;
 using EnhancedItemInfo.Utils;
 using HarmonyLib;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace EnhancedItemInfo;
@@ -9,12 +10,26 @@ namespace EnhancedItemInfo;
 public class ModBehaviour: Duckov.Modding.ModBehaviour {
     public const string ModId = $"{VersionInfo.Author}.{VersionInfo.Name}";
 
-    internal static Harmony? harmony = null;
+    internal static Harmony? HarmonyInstance {
+        get {
+            if (field == null) {
+                try {
+                    field = new Harmony(ModId);
+                }
+                catch (Exception ex) {
+                    Logger.Error("Failed to create harmony instance", ex);
+                }
+            }
+            return field;
+        }
+    } = null;
     public static readonly Assembly assembly = Assembly.GetExecutingAssembly();
 
     static bool Inited = false;
     internal static event Action? OnSetup = null;
     internal static event Action? OnDeactivate = null;
+
+    internal static HashSet<Type> Patchs = [];
 
     static void Init() {
         if (Inited) {
@@ -25,13 +40,16 @@ public class ModBehaviour: Duckov.Modding.ModBehaviour {
             if (type == null) {
                 continue;
             }
-            if (type.IsDefined(typeof(SubModuleAttribute), false) || type.IsDefined(typeof(PatchNeedSetupAttribute), false)) {
+            if (type.NeedSetup()) {
                 try {
                     AccessTools.Method(type, "Init").Invoke(null, []);
                 }
                 catch (Exception ex) {
                     Logger.Error($"Unable to Init {type.FullName}", ex);
                 }
+            }
+            if (type.IsPatch()) {
+                Patchs.Add(type);
             }
         }
         Inited = true;
@@ -46,12 +64,18 @@ public class ModBehaviour: Duckov.Modding.ModBehaviour {
 
         OnSetup?.Invoke();
 
-        try {
-            harmony = new Harmony(ModId);
-            harmony?.PatchAll(assembly);
+        if (HarmonyInstance == null) {
+            return;
         }
-        catch (Exception ex) {
-            Logger.Error("Failed to patch harmony", ex);
+        foreach (var patch in Patchs) {
+            // 分离Patch避免整个Mod挂了
+            try {
+                HarmonyInstance.CreateClassProcessor(patch).Patch();
+                Logger.Info($"Patch {patch.FullName} success");
+            }
+            catch (Exception ex) {
+                Logger.Error($"Failed to patch {patch.FullName}", ex);
+            }
         }
     }
     protected override void OnBeforeDeactivate() {
@@ -59,17 +83,8 @@ public class ModBehaviour: Duckov.Modding.ModBehaviour {
 
         Logger.Info("Disabling submodule");
 
+        HarmonyInstance?.UnpatchAll(ModId);
+
         OnDeactivate?.Invoke();
-
-        try {
-            harmony?.UnpatchAll(ModId);
-        }
-        catch (Exception ex) {
-            Logger.Error("Failed to unpatch harmony", ex);
-        }
-    }
-
-    void OnDestroy() {
-        OnBeforeDeactivate();
     }
 }

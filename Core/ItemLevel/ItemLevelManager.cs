@@ -1,11 +1,12 @@
 using Duckov.UI;
+using EnhancedItemInfo.Attributes;
 using EnhancedItemInfo.Patchs;
 using EnhancedItemInfo.Utils;
 using UnityEngine.UI;
 
 namespace EnhancedItemInfo.Core.ItemLevel;
 
-[SubModule]
+[NeedSetup]
 internal static class ItemLevelManager {
     public static void Init() {
         Logger.Info($"{nameof(ItemLevelManager)} is registered");

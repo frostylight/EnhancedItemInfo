@@ -1,5 +1,6 @@
 using Duckov.Buildings;
 using Duckov.Economy;
+using EnhancedItemInfo.Attributes;
 using EnhancedItemInfo.Utils;
 using HarmonyLib;
 using ItemStatsSystem;
@@ -7,7 +8,8 @@ using System.Collections.Generic;
 
 namespace EnhancedItemInfo.Patchs;
 
-[PatchNeedSetup]
+[Patch]
+[NeedSetup]
 [HarmonyPatch(typeof(BuildingManager))]
 internal class Patch_BuildingManager {
     // 每种物品的建筑需求

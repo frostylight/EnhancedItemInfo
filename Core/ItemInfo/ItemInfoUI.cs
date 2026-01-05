@@ -19,79 +19,108 @@ public class ItemInfoUI {
             return field;
         }
     } = null;
+    DetailedCounter Counter {
+        get {
+            field ??= new();
+            return field;
+        }
+    } = null;
     bool hideOnce = false;
+    bool useCounter = false;
 
     public ItemInfoUI() { }
 
     public ItemInfoUI Hide() {
         ItemInfoText.gameObject.SetActive(false);
         hideOnce = false;
+        useCounter = false;
         return this;
     }
     public ItemInfoUI HideOnce() {
         ItemInfoText.gameObject.SetActive(false);
         hideOnce = true;
+        useCounter = false;
         return this;
     }
     public ItemInfoUI Show() {
-        if (hideOnce) {
-            hideOnce = false;
-            return this;
+        if (!hideOnce) {
+            if (useCounter) {
+                ItemInfoText.text = Counter.ToString();
+                useCounter = false;
+            }
+            ItemInfoText.gameObject.SetActive(true);
         }
-        ItemInfoText.gameObject.SetActive(true);
+        hideOnce = false;
         return this;
     }
     public ItemInfoUI SetParent(Transform parent, bool worldPositionStays = true) {
-        if (hideOnce) {
-            return this;
+        if (!hideOnce) {
+            ItemInfoText.transform.SetParent(parent, worldPositionStays);
+            // 保证文本相对位置
+            ItemInfoText.transform.SetAsLastSibling();
         }
-        ItemInfoText.transform.SetParent(parent, worldPositionStays);
-        // 保证文本相对位置
-        ItemInfoText.transform.SetAsLastSibling();
         return this;
     }
     public ItemInfoUI SetColor(Color color) {
-        if (hideOnce) {
-            return this;
+        if (!hideOnce) {
+            ItemInfoText.color = color;
         }
-        ItemInfoText.color = color;
         return this;
     }
     public ItemInfoUI SetText(string text) {
-        if (hideOnce) {
-            return this;
+        if (!hideOnce) {
+            if (!useCounter) {
+                ItemInfoText.text = text;
+            }
         }
-        ItemInfoText.text = text;
         return this;
     }
     public ItemInfoUI AppendText(string text) {
-        if (hideOnce) {
-            return this;
+        if (!hideOnce) {
+            if (!useCounter) {
+                ItemInfoText.text += text;
+            }
         }
-        ItemInfoText.text += text;
         return this;
     }
     public ItemInfoUI AppendTextIf(bool condition, string text) {
-        if (hideOnce) {
-            return this;
-        }
-        if (condition) {
-            return AppendText(text);
+        if (!hideOnce) {
+            if (condition) {
+                return AppendText(text);
+            }
         }
         return this;
     }
     public ItemInfoUI SetFontSize(float fontSize) {
-        if (hideOnce) {
-            return this;
+        if (!hideOnce) {
+            ItemInfoText.fontSize = fontSize;
         }
-        ItemInfoText.fontSize = fontSize;
         return this;
     }
     public ItemInfoUI SetWordWrap(bool wordWrap) {
-        if (hideOnce) {
-            return this;
+        if (!hideOnce) {
+            ItemInfoText.enableWordWrapping = wordWrap;
         }
-        ItemInfoText.enableWordWrapping = wordWrap;
         return this;
+    }
+    public ItemInfoUI UseCounter(string prefix) {
+        if (!hideOnce) {
+            useCounter = true;
+            Counter.Clear(prefix);
+        }
+        return this;
+    }
+    public ItemInfoUI AddPart(string name, long value) {
+        if (!hideOnce) {
+            if (useCounter) {
+                Counter.AddPart(name, value);
+            }
+        }
+        return this;
+    }
+
+    public void Destroy() {
+        ItemInfoText.gameObject.SetActive(false);
+        UnityEngine.Object.Destroy(ItemInfoText);
     }
 }
