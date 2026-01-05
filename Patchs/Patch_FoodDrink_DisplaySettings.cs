@@ -1,7 +1,6 @@
 using Duckov.ItemUsage;
 using EnhancedItemInfo.Attributes;
 using EnhancedItemInfo.Core;
-using EnhancedItemInfo.Utils;
 using HarmonyLib;
 using SodaCraft.Localizations;
 

@@ -1,3 +1,4 @@
+using Duckov.ItemUsage;
 using Duckov.UI;
 using EnhancedItemInfo.Attributes;
 using EnhancedItemInfo.Utils;
@@ -69,7 +70,44 @@ internal static class ItemInfoManager {
         if (!item.UseDurability) {
             return ItemDurabilityText.HideOnce();
         }
-        return ItemDurabilityText.SetText($"耐久 {item.Durability} / {item.MaxDurabilityWithLoss}");
+        ItemDurabilityText.SetText($"耐久 {item.Durability:0.##} / {item.MaxDurabilityWithLoss:0.##}");
+        // 以下处理部分道具可用次数
+        var usage = item.UsageUtilities;
+        if (usage == null) {
+            return ItemDurabilityText;
+        }
+        bool dynamicUsage = false;
+        float useDurability = 0f;
+        foreach (var behavior in usage.behaviors) {
+            if (behavior == null) {
+                continue;
+            }
+            switch (behavior) {
+                case FoodDrink foodDrink: {
+                    useDurability += foodDrink.UseDurability;
+                    break;
+                }
+                case Drug drug: {
+                    if (drug.useDurability) {
+                        useDurability += drug.durabilityUsage; // 满治疗量消耗耐久
+                        dynamicUsage = true;
+                    }
+                    break;
+                }
+                case RemoveBuff removeBuff: {
+                    if (removeBuff.useDurability) {
+                        useDurability += removeBuff.durabilityUsage;
+                    }
+                    break;
+                }
+            }
+        }
+        if (useDurability <= 1e-8) {
+            return ItemDurabilityText;
+        }
+        int maxUseCount = Mathf.CeilToInt(item.MaxDurability / useDurability);
+        int useCount = Mathf.CeilToInt(item.Durability / useDurability);
+        return ItemDurabilityText.AppendText("\n").AppendTextIf(dynamicUsage, "预估").AppendText($"可用次数 {useCount} / {maxUseCount}");
     }
     public static ItemInfoUI SetupItemRequirement(int typeID) {
         int quest = ItemUtils.GetQuestRequirement(typeID);
