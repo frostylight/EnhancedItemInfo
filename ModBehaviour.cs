@@ -1,3 +1,4 @@
+using EnhancedItemInfo.Config;
 using EnhancedItemInfo.Core;
 using EnhancedItemInfo.Utils;
 using HarmonyLib;
@@ -29,9 +30,9 @@ public class ModBehaviour: Duckov.Modding.ModBehaviour {
     internal static event Action? OnSetup = null;
     internal static event Action? OnDeactivate = null;
 
-    internal static HashSet<Type> Patchs = [];
+    internal static List<Type> Patchs = [];
 
-    static void Init() {
+    void Init() {
         if (Inited) {
             return;
         }
@@ -42,7 +43,7 @@ public class ModBehaviour: Duckov.Modding.ModBehaviour {
             }
             if (type.NeedSetup()) {
                 try {
-                    AccessTools.Method(type, "Init").Invoke(null, []);
+                    AccessTools.DeclaredMethod(type, "Init").Invoke(null, []);
                 }
                 catch (Exception ex) {
                     Logger.Error($"Unable to Init {type.FullName}", ex);
@@ -52,6 +53,8 @@ public class ModBehaviour: Duckov.Modding.ModBehaviour {
                 Patchs.Add(type);
             }
         }
+        Logger.Info($"Init Setting");
+        Setting.Init(info);
         Inited = true;
     }
 
@@ -81,10 +84,16 @@ public class ModBehaviour: Duckov.Modding.ModBehaviour {
     protected override void OnBeforeDeactivate() {
         base.OnBeforeDeactivate();
 
-        Logger.Info("Disabling submodule");
+        Logger.Info("Disable All");
 
         HarmonyInstance?.UnpatchAll(ModId);
 
         OnDeactivate?.Invoke();
+    }
+
+    public void OnApplicationQuit() {
+        Logger.Info($"Save setting before quit");
+
+        Setting.Save();
     }
 }

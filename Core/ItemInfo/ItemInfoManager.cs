@@ -13,6 +13,23 @@ namespace EnhancedItemInfo.Core.ItemInfo;
 
 [NeedSetup]
 internal static class ItemInfoManager {
+    [ToggleConfig("ColoredInfo", "物品信息颜色")]
+    public static bool EnableColoredInfo = true;
+    [ToggleConfig("ItemCount", "物品已有数量")]
+    public static bool EnableItemCount = true;
+    [ToggleConfig("ItemDurability", "物品耐久")]
+    public static bool EnableItemDurability = true;
+    [ToggleConfig("ItemAvailableCount", "物品可用次数")]
+    public static bool EnableItemAvailableCount = true;
+    [ToggleConfig("ItemRequirement", "物品需求")]
+    public static bool EnableItemRequirement = true;
+    [ToggleConfig("ItemWeight", "物品重量")]
+    public static bool EnableItemWeight = true;
+    [ToggleConfig("ItemValue", "物品价值")]
+    public static bool EnableItemValue = true;
+    [ToggleConfig("ItemDecompose", "物品分解信息")]
+    public static bool EnableItemDecompose = true;
+
     public static void Init() {
         Logger.Info($"{nameof(ItemInfoManager)} is registered");
 
@@ -66,12 +83,22 @@ internal static class ItemInfoManager {
         return ItemCountText.UseCounter($"已有 {total}").AddPart("仓库", inStorage).AddPart("背包", onPlayer).AddPart("宠物", onPet);
     }
     public static ItemInfoUI SetupItemDurability(Item item) {
-        Logger.Debug($"Setup {item.DisplayName}");
+        if (!EnableItemDurability && !EnableItemAvailableCount) {
+            return ItemCountText.HideOnce(); 
+        }
         if (!item.UseDurability) {
             return ItemDurabilityText.HideOnce();
         }
-        ItemDurabilityText.SetText($"耐久 {item.Durability:0.##} / {item.MaxDurabilityWithLoss:0.##}");
+        if (EnableItemDurability) {
+            ItemDurabilityText.SetText($"耐久 {item.Durability:0.##} / {item.MaxDurabilityWithLoss:0.##}");
+        }
+        else {
+            ItemDurabilityText.SetText("");
+        }
         // 以下处理部分道具可用次数
+        if (!EnableItemAvailableCount) {
+            return ItemDurabilityText;
+        }
         var usage = item.UsageUtilities;
         if (usage == null) {
             return ItemDurabilityText;
@@ -107,9 +134,12 @@ internal static class ItemInfoManager {
         }
         int maxUseCount = Mathf.CeilToInt(item.MaxDurability / useDurability);
         int useCount = Mathf.CeilToInt(item.Durability / useDurability);
-        return ItemDurabilityText.AppendText("\n").AppendTextIf(dynamicUsage, "预估").AppendText($"可用次数 {useCount} / {maxUseCount}");
+        return ItemDurabilityText.AppendTextIf(EnableItemDurability,"\n").AppendTextIf(dynamicUsage, "预估").AppendText($"可用次数 {useCount} / {maxUseCount}");
     }
     public static ItemInfoUI SetupItemRequirement(int typeID) {
+        if (!EnableItemRequirement) {
+            return ItemRequirementText.HideOnce();
+        }
         int quest = ItemUtils.GetQuestRequirement(typeID);
         long building = ItemUtils.GetBuildingRequirement(typeID);
         long perk = ItemUtils.GetPerkRequirement(typeID);
@@ -120,6 +150,9 @@ internal static class ItemInfoManager {
         return ItemRequirementText.UseCounter($"需求 {total}").AddPart("任务", quest).AddPart("强化", perk).AddPart("建筑", building);
     }
     public static ItemInfoUI SetupItemDecompose(int typeID) {
+        if (!EnableItemDecompose) {
+            return ItemDecomposeText.HideOnce();
+        }
         var decomposeItems = ItemUtils.GetDecomposeItems(typeID);
         if (decomposeItems.Length == 0) {
             return ItemDecomposeText.HideOnce();
@@ -131,21 +164,27 @@ internal static class ItemInfoManager {
         }
         return ItemDecomposeText.SetText(stringBuilder.ToString());
     }
+
     public static void OnSetupMetaHoveringUI(ItemHoveringUI uiInstance, ItemMetaData data) {
         HideAllText();
 
         var parent = uiInstance.LayoutParent;
-        Color color = data.GetLevelColor().WithAlpha(1f);
+        Color color = EnableColoredInfo ? data.GetLevelColor().WithAlpha(1f) : Color.white;
 
         Traverse.Create(uiInstance).Field("itemName").GetValue<TextMeshProUGUI>()?.color = color;
 
-        SetupItemCount(data.id).SetParent(parent).SetColor(color).Show();
+        if (EnableItemCount) {
+            SetupItemCount(data.id).SetParent(parent).SetColor(color).Show();
+        }
         SetupItemRequirement(data.id).SetParent(parent).SetColor(color).Show();
 
-        Item template = ItemAssetsCollection.GetPrefab(data.id);
-        ItemWeightText.SetParent(parent).SetText($"单位重量 {template.UnitSelfWeight:0.##}kg").SetColor(color).Show();
-
-        ItemValueText.SetParent(parent).SetText($"${data.priceEach / 2f:0.##}").SetColor(color).Show();
+        if(EnableItemWeight){
+            Item template = ItemAssetsCollection.GetPrefab(data.id);
+            ItemWeightText.SetParent(parent).SetText($"单位重量 {template.UnitSelfWeight:0.##}kg").SetColor(color).Show();
+        }
+        if(EnableItemValue){
+            ItemValueText.SetParent(parent).SetText($"${data.priceEach / 2f:0.##}").SetColor(color).Show();
+        }
         SetupItemDecompose(data.id).SetParent(parent).SetColor(color).Show();
     }
     public static void OnSetupItemHoveringUI(ItemHoveringUI uiInstance, Item? item) {
@@ -154,15 +193,22 @@ internal static class ItemInfoManager {
             return;
         }
         var parent = uiInstance.LayoutParent;
-        Color color = item.GetLevelColor().WithAlpha(1f);
+
+        Color color = EnableColoredInfo ? item.GetLevelColor().WithAlpha(1f) : Color.white;
 
         Traverse.Create(uiInstance).Field("itemName").GetValue<TextMeshProUGUI>()?.color = color;
 
-        SetupItemCount(item.TypeID).SetParent(parent).SetColor(color).Show();
+        if (EnableItemCount) {
+            SetupItemCount(item.TypeID).SetParent(parent).SetColor(color).Show();
+        }
         SetupItemDurability(item).SetParent(parent).SetColor(color).Show();
         SetupItemRequirement(item.TypeID).SetParent(parent).SetColor(color).Show();
-        ItemWeightText.SetParent(parent).SetText($"总重 {item.TotalWeight:0.##}kg").AppendTextIf(item.Slots != null && item.Slots.Count > 0, $"\t自重 {item.SelfWeight:0.##}kg").SetColor(color).Show();
-        ItemValueText.SetParent(parent).SetText($"${item.GetTotalRawValue() / 2f:0.##}").AppendTextIf(item.Stackable, $" ({item.Value / 2f:0.##})").SetColor(color).Show();
+        if(EnableItemWeight){
+            ItemWeightText.SetParent(parent).SetText($"总重 {item.TotalWeight:0.##}kg").AppendTextIf(item.Slots != null && item.Slots.Count > 0, $"\t自重 {item.SelfWeight:0.##}kg").SetColor(color).Show();
+        }
+        if(EnableItemValue){
+            ItemValueText.SetParent(parent).SetText($"${item.GetTotalRawValue() / 2f:0.##}").AppendTextIf(item.Stackable, $" ({item.Value / 2f:0.##})").SetColor(color).Show();
+        }
         SetupItemDecompose(item.TypeID).SetParent(parent).SetColor(color).Show();
     }
 }

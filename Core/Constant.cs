@@ -4,17 +4,15 @@ using UnityEngine;
 namespace EnhancedItemInfo.Core;
 
 public static class Constant {
-    public const int LRUCacheCapacity = 25;
+    public const string ItemKeyTag = "Key";
+    public const string ItemFormulaTag = "Formula_Blueprint";
 
     public const string RegisteredMarkBackgroundKey = "MarkBackground";
     public const string RegisteredMarkTextKey = "MarkText";
     public static readonly Vector2 MarkPostion = new(-5, -5);
     public static readonly Vector2 MarkSize = new(28, 28);
-    public static readonly Color MarkBackgroundColor = Color.white.WithAlpha(0.8f);
+    public static readonly Color MarkBackgroundColor = ColorUtils.RGBA(0xffffff_cc);
     public static readonly Color MarkColor = Color.magenta;
-
-    public const string KeyTag = "Key";
-    public const string FormulaTag = "Formula_Blueprint";
 
     public static Color Transparent = ColorUtils.RGBA(0xffffff_00);
     public static Color White = ColorUtils.RGBA(0xffffff_40);
@@ -26,4 +24,6 @@ public static class Constant {
     public static Color Red = ColorUtils.RGBA(0xbb0000_96);
 
     public const string durabilityUsageDescriptionKey = "Usage_Durability";
+
+    public const string ModSettingAPI_FullName = "ModSetting.ModBehaviour";
 }

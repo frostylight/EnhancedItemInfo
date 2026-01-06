@@ -33,6 +33,11 @@
 		<Reference Include="$(DuckovManagedPath)Unity*">
 			<Private>False</Private>
 		</Reference>
+		
+		<!-- 游戏自带JSON -->
+		<Reference Include="$(DuckovManagedPath)Newtonsoft.Json.dll">
+			<Private>False</Private>
+		</Reference>
 
 		<!-- 依赖引用 -->
 		<Reference Include="0Harmony">

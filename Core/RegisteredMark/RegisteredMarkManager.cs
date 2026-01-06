@@ -4,12 +4,16 @@ using EnhancedItemInfo.Patchs;
 using EnhancedItemInfo.Utils;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Logger = EnhancedItemInfo.Utils.Logger;
 
 namespace EnhancedItemInfo.Core.RegisteredMark;
 
 [NeedSetup]
 internal static class RegisteredMarkManager {
+    [ToggleConfig("RegisteredMark", "录入标识")]
+    public static bool Enable = true;
+
     public static void Init() {
         Logger.Info($"{nameof(RegisteredMarkManager)} is registered");
 
@@ -102,6 +106,10 @@ internal static class RegisteredMarkManager {
         HideMark(background);
     }
     public static void OnItemDisplayShow(ItemDisplay itemDisplay) {
+        if (!Enable) { 
+            OnItemDisplayReset(itemDisplay);
+            return;
+        }
         if (!itemDisplay.Target.IsRegistered()) {
             OnItemDisplayReset(itemDisplay);
             return;
@@ -114,9 +122,14 @@ internal static class RegisteredMarkManager {
         SetupAndShow(background);
     }
     public static void OnItemMetaDisplayShow(ItemMetaDisplay itemMetaDisplay) {
+        
         var background = itemMetaDisplay.transform?.Find("BG");
         if (background == null) {
             Logger.Warn($"Null background of {itemMetaDisplay.name}");
+            return;
+        }
+        if (!Enable) {
+            HideMark(background);
             return;
         }
         if (!itemMetaDisplay.GetMetaData().IsRegistered()) {
@@ -129,6 +142,10 @@ internal static class RegisteredMarkManager {
         var icon = itemAmountDisplay.transform?.Find("Icon");
         if (icon == null) {
             Logger.Warn($"Null Icon of {itemAmountDisplay.name}");
+            return;
+        }
+        if (!Enable) {
+            HideMark(icon);
             return;
         }
         if (!itemAmountDisplay.GetMetaData().IsRegistered()) {
