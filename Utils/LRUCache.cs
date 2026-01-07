@@ -6,7 +6,6 @@ namespace EnhancedItemInfo.Utils;
 
 /// <summary>
 /// LRU缓存的Dictionary，效率存疑
-/// 线程安全，但无脑加锁
 /// </summary>
 /// <param name="capacity">缓存大小</param>
 public class LRUCache<TKey, TValue>(int capacity) where TValue : notnull {

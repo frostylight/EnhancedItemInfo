@@ -4,7 +4,6 @@ using EnhancedItemInfo.Patchs;
 using EnhancedItemInfo.Utils;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Logger = EnhancedItemInfo.Utils.Logger;
 
 namespace EnhancedItemInfo.Core.RegisteredMark;
@@ -106,7 +105,7 @@ internal static class RegisteredMarkManager {
         HideMark(background);
     }
     public static void OnItemDisplayShow(ItemDisplay itemDisplay) {
-        if (!Enable) { 
+        if (!Enable) {
             OnItemDisplayReset(itemDisplay);
             return;
         }
@@ -122,7 +121,7 @@ internal static class RegisteredMarkManager {
         SetupAndShow(background);
     }
     public static void OnItemMetaDisplayShow(ItemMetaDisplay itemMetaDisplay) {
-        
+
         var background = itemMetaDisplay.transform?.Find("BG");
         if (background == null) {
             Logger.Warn($"Null background of {itemMetaDisplay.name}");

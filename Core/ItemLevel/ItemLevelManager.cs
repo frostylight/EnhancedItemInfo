@@ -18,18 +18,18 @@ internal static class ItemLevelManager {
         ModBehaviour.OnDeactivate += OnDeactivate;
     }
     public static void OnSetup() {
-            Logger.Info($"{nameof(ItemLevelManager)} is enabled");
+        Logger.Info($"{nameof(ItemLevelManager)} is enabled");
 
-            Patch_ItemDisplay_Setup.OnItemDisplayReset += OnItemDisplayReset;
-            Patch_ItemDisplay_Setup.OnItemDisplayShow += OnItemDisplayShow;
-            Patch_ItemMetaDisplay_Setup.OnItemMetaDisplayShow += OnItemMetaDisplayShow;
+        Patch_ItemDisplay_Setup.OnItemDisplayReset += OnItemDisplayReset;
+        Patch_ItemDisplay_Setup.OnItemDisplayShow += OnItemDisplayShow;
+        Patch_ItemMetaDisplay_Setup.OnItemMetaDisplayShow += OnItemMetaDisplayShow;
     }
     public static void OnDeactivate() {
-            Logger.Info($"{nameof(ItemLevelManager)} is disabled");
+        Logger.Info($"{nameof(ItemLevelManager)} is disabled");
 
-            Patch_ItemDisplay_Setup.OnItemDisplayReset -= OnItemDisplayReset;
-            Patch_ItemDisplay_Setup.OnItemDisplayShow -= OnItemDisplayShow;
-            Patch_ItemMetaDisplay_Setup.OnItemMetaDisplayShow -= OnItemMetaDisplayShow;
+        Patch_ItemDisplay_Setup.OnItemDisplayReset -= OnItemDisplayReset;
+        Patch_ItemDisplay_Setup.OnItemDisplayShow -= OnItemDisplayShow;
+        Patch_ItemMetaDisplay_Setup.OnItemMetaDisplayShow -= OnItemMetaDisplayShow;
     }
 
     internal static void OnItemDisplayReset(ItemDisplay itemDisplay) {
