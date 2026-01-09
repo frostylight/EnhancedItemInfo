@@ -3,7 +3,7 @@ using HarmonyLib;
 using ItemStatsSystem;
 using System;
 
-namespace EnhancedItemInfo.Patchs;
+namespace EnhancedItemInfo.Patches;
 
 [Patch]
 [HarmonyPatch(typeof(ItemMetaDisplay), nameof(ItemMetaDisplay.Setup), [typeof(ItemMetaData)])]

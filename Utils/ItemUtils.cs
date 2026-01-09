@@ -1,9 +1,7 @@
 using Duckov.Economy;
-using Duckov.Utilities;
 using EnhancedItemInfo.Core;
-using EnhancedItemInfo.Patchs;
+using EnhancedItemInfo.Patches;
 using ItemStatsSystem;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace EnhancedItemInfo.Utils;
@@ -109,25 +107,6 @@ public static class ItemUtils {
         return formula.result.items;
     }
 
-    public static bool TagContains(IEnumerable<Tag>? tags, string name) {
-        if (tags == null) {
-            return false;
-        }
-        return tags.Any(tag => tag != null && tag.name.Equals(name));
-    }
-    public static bool IsKey(this Item item) => TagContains(item.Tags, Constant.ItemKeyTag);
-    public static bool IsKey(this ItemMetaData itemMetaData) => TagContains(itemMetaData.tags, Constant.ItemKeyTag);
-    public static bool IsKeyItem(int typeID) => ItemAssetsCollection.GetMetaData(typeID).IsKey();
-    public static bool IsFormula(this Item item) => TagContains(item.Tags, Constant.ItemFormulaTag);
-    public static bool IsFormula(this ItemMetaData itemMetaData) => TagContains(itemMetaData.tags, Constant.ItemFormulaTag);
-    public static bool IsFormulaItem(int typeID) => ItemAssetsCollection.GetMetaData(typeID).IsFormula();
-    public static bool IsKeyOrFormula(this Item item) {
-        var tags = item.Tags;
-        if (tags == null) {
-            return false;
-        }
-        return tags.Any(tag => tag != null && (tag.name.Equals(Constant.ItemKeyTag) || tag.name.Equals(Constant.ItemFormulaTag)));
-    }
     public static bool IsKeyOrFormula(this ItemMetaData itemMetaData) {
         var tags = itemMetaData.tags;
         if (tags == null) {
@@ -135,22 +114,11 @@ public static class ItemUtils {
         }
         return tags.Any(tag => tag != null && (tag.name.Equals(Constant.ItemKeyTag) || tag.name.Equals(Constant.ItemFormulaTag)));
     }
-    public static bool IsKeyOrFormulaItem(int typeID) => ItemAssetsCollection.GetMetaData(typeID).IsKeyOrFormula();
     public static bool IsRegistered(this ItemMetaData itemMetaData) {
         if (!itemMetaData.IsKeyOrFormula()) {
             return false;
         }
         Item? prefab = ItemAssetsCollection.GetPrefab(itemMetaData.id);
-        if (prefab == null) {
-            return false;
-        }
-        return prefab.IsRegistered();
-    }
-    public static bool IsRegisteredItem(int typeID) {
-        if (!IsKeyOrFormulaItem(typeID)) {
-            return false;
-        }
-        Item? prefab = ItemAssetsCollection.GetPrefab(typeID);
         if (prefab == null) {
             return false;
         }

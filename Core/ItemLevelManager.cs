@@ -1,10 +1,12 @@
 using Duckov.UI;
 using EnhancedItemInfo.Attributes;
-using EnhancedItemInfo.Patchs;
+using EnhancedItemInfo.Core.ItemLevel;
+using EnhancedItemInfo.Extensions;
+using EnhancedItemInfo.Patches;
 using EnhancedItemInfo.Utils;
 using UnityEngine.UI;
 
-namespace EnhancedItemInfo.Core.ItemLevel;
+namespace EnhancedItemInfo.Core;
 
 [NeedSetup]
 internal static class ItemLevelManager {
@@ -40,13 +42,13 @@ internal static class ItemLevelManager {
             OnItemDisplayReset(itemDisplay);
             return;
         }
-        itemDisplay.transform?.Find("BG")?.GetComponent<Image>()?.color = itemDisplay.Target.GetLevelColor();
+        itemDisplay.transform?.Find("BG")?.GetComponent<Image>()?.color = itemDisplay.Target.GetMeta().GetLevelColor();
     }
     internal static void OnItemMetaDisplayShow(ItemMetaDisplay itemMetaDisplay) {
         if (!Enable) {
             itemMetaDisplay.transform?.Find("BG")?.GetComponent<Image>()?.color = Constant.Transparent;
             return;
         }
-        itemMetaDisplay.transform?.Find("BG")?.GetComponent<Image>()?.color = itemMetaDisplay.GetMetaData().GetLevelColor();
+        itemMetaDisplay.transform?.Find("BG")?.GetComponent<Image>()?.color = itemMetaDisplay.GetMetaData().GetMeta().GetLevelColor();
     }
 }

@@ -1,12 +1,12 @@
 using Duckov.UI;
 using EnhancedItemInfo.Attributes;
-using EnhancedItemInfo.Patchs;
+using EnhancedItemInfo.Patches;
 using EnhancedItemInfo.Utils;
 using TMPro;
 using UnityEngine;
 using Logger = EnhancedItemInfo.Utils.Logger;
 
-namespace EnhancedItemInfo.Core.RegisteredMark;
+namespace EnhancedItemInfo.Core;
 
 [NeedSetup]
 internal static class RegisteredMarkManager {

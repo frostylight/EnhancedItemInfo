@@ -5,7 +5,7 @@ using HarmonyLib;
 using ItemStatsSystem;
 using System.Collections.Generic;
 
-namespace EnhancedItemInfo.Patchs;
+namespace EnhancedItemInfo.Patches;
 
 [Patch]
 [HarmonyPatch(typeof(PerkTree), nameof(PerkTree.SetupSaveData))]

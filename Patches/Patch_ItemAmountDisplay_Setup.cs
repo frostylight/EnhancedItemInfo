@@ -2,7 +2,7 @@ using EnhancedItemInfo.Attributes;
 using HarmonyLib;
 using System;
 
-namespace EnhancedItemInfo.Patchs;
+namespace EnhancedItemInfo.Patches;
 
 [Patch]
 [HarmonyPatch(typeof(ItemAmountDisplay), nameof(ItemAmountDisplay.Setup))]

@@ -4,7 +4,7 @@ using EnhancedItemInfo.Core;
 using HarmonyLib;
 using SodaCraft.Localizations;
 
-namespace EnhancedItemInfo.Patchs;
+namespace EnhancedItemInfo.Patches;
 
 [Patch]
 [HarmonyPatch(typeof(FoodDrink), nameof(FoodDrink.DisplaySettings), MethodType.Getter)]

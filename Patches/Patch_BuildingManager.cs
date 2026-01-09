@@ -6,7 +6,7 @@ using HarmonyLib;
 using ItemStatsSystem;
 using System.Collections.Generic;
 
-namespace EnhancedItemInfo.Patchs;
+namespace EnhancedItemInfo.Patches;
 
 [Patch]
 [NeedSetup]

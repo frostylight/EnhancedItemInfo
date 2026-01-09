@@ -1,5 +1,6 @@
 using EnhancedItemInfo.Config;
 using EnhancedItemInfo.Core;
+using EnhancedItemInfo.Extensions;
 using EnhancedItemInfo.Utils;
 using HarmonyLib;
 using System;
@@ -54,7 +55,7 @@ public class ModBehaviour: Duckov.Modding.ModBehaviour {
             }
         }
         Logger.Info($"Init Setting");
-        Setting.Init(info);
+        ConfigManager.Init(info);
         Inited = true;
     }
 
@@ -94,6 +95,6 @@ public class ModBehaviour: Duckov.Modding.ModBehaviour {
     public void OnApplicationQuit() {
         Logger.Info($"Save setting before quit");
 
-        Setting.Save();
+        ConfigManager.Save();
     }
 }

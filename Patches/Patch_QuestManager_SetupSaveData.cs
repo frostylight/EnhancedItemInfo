@@ -5,7 +5,7 @@ using EnhancedItemInfo.Utils;
 using HarmonyLib;
 using System.Collections.Generic;
 
-namespace EnhancedItemInfo.Patchs;
+namespace EnhancedItemInfo.Patches;
 
 [Patch]
 [HarmonyPatch(typeof(QuestManager), nameof(QuestManager.SetupSaveData))]

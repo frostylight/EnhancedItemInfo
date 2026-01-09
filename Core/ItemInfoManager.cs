@@ -1,5 +1,8 @@
 using Duckov.UI;
 using EnhancedItemInfo.Attributes;
+using EnhancedItemInfo.Core.ItemInfo;
+using EnhancedItemInfo.Core.ItemLevel;
+using EnhancedItemInfo.Extensions;
 using EnhancedItemInfo.Utils;
 using HarmonyLib;
 using ItemStatsSystem;
@@ -7,7 +10,7 @@ using TMPro;
 using UnityEngine;
 using Logger = EnhancedItemInfo.Utils.Logger;
 
-namespace EnhancedItemInfo.Core.ItemInfo;
+namespace EnhancedItemInfo.Core;
 
 [NeedSetup]
 internal static class ItemInfoManager {
@@ -45,7 +48,7 @@ internal static class ItemInfoManager {
     public static void OnSetupMetaHoveringUI(ItemHoveringUI uiInstance, ItemMetaData data) {
         HideAllText();
 
-        Color color = EnableColoredInfo ? data.GetLevelColor().WithAlpha(1f) : Color.white;
+        Color color = EnableColoredInfo ? data.GetMeta().GetLevelColor().WithAlpha(1f) : Color.white;
         Traverse.Create(uiInstance).Field("itemName").GetValue<TextMeshProUGUI>()?.color = color;
 
         ItemCount.Instance.SetupAndShow(uiInstance, data);
@@ -60,7 +63,7 @@ internal static class ItemInfoManager {
             return;
         }
 
-        Color color = EnableColoredInfo ? item.GetLevelColor().WithAlpha(1f) : Color.white;
+        Color color = EnableColoredInfo ? item.GetMeta().GetLevelColor().WithAlpha(1f) : Color.white;
         Traverse.Create(uiInstance).Field("itemName").GetValue<TextMeshProUGUI>()?.color = color;
 
         ItemCount.Instance.SetupAndShow(uiInstance, item);

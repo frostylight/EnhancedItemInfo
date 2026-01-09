@@ -4,6 +4,10 @@ using UnityEngine;
 namespace EnhancedItemInfo.Core;
 
 public static class Constant {
+    public const string ItemBulletTag = "Bullet";
+    public const string ItemAccessoryTag = "Accessory";
+    public const string ItemEquipmentTag = "Equipment";
+    public const string ItemSpecialTag = "Special";
     public const string ItemKeyTag = "Key";
     public const string ItemFormulaTag = "Formula_Blueprint";
 

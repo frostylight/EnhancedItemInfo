@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-namespace EnhancedItemInfo.Patchs;
+namespace EnhancedItemInfo.Patches;
 
 [Patch]
 [NeedSetup]

@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace EnhancedItemInfo.Config;
 
-internal static class Setting {
+internal static class ConfigManager {
     public static bool Inited { get; private set; } = false;
     public static ModInfo modInfo;
     public static bool ModSettingEnable { get; private set; } = false;
