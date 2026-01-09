@@ -2,7 +2,6 @@ using Duckov.UI;
 using Duckov.Utilities;
 using EnhancedItemInfo.Core.ItemLevel;
 using EnhancedItemInfo.Extensions;
-using EnhancedItemInfo.Utils;
 using ItemStatsSystem;
 using TMPro;
 using UnityEngine;
@@ -40,6 +39,7 @@ internal abstract class ItemInfoUI<T> where T : ItemInfoUI<T> {
                 SetColor(item.GetMeta().GetLevelColor().WithAlpha(1f));
             }
             SetParent(uiInstance.LayoutParent);
+            SetAsLastSibling();
             Show();
         }
     }
@@ -52,6 +52,7 @@ internal abstract class ItemInfoUI<T> where T : ItemInfoUI<T> {
                 SetColor(itemMetaData.GetMeta().GetLevelColor().WithAlpha(1f));
             }
             SetParent(uiInstance.LayoutParent);
+            SetAsLastSibling();
             Show();
         }
     }

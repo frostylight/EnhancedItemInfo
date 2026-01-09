@@ -38,21 +38,21 @@ internal static class ColorLevel {
     /// </summary>
     public static readonly Dictionary<int, Level> itemLevelCache = [];
     public static Level GetLevel(this IItemMeta itemMeta) {
-        if(itemLevelCache.TryGetValue(itemMeta.TypeID, out Level level)) { 
+        if (itemLevelCache.TryGetValue(itemMeta.TypeID, out Level level)) {
             return level;
         }
-        level=GetLevelWithoutCache(itemMeta);
+        level = GetLevelWithoutCache(itemMeta);
         itemLevelCache.Add(itemMeta.TypeID, level);
         return level;
     }
-    public static Color GetLevelColor(this IItemMeta itemMeta) { 
+    public static Color GetLevelColor(this IItemMeta itemMeta) {
         return itemMeta.GetLevel().ToColor();
     }
 
     static Level GetLevelByDisplayQuality(DisplayQuality displayQuality) {
         return displayQuality switch {
             DisplayQuality.None => Level.Transparent,
-            DisplayQuality.White=>Level.White,
+            DisplayQuality.White => Level.White,
             DisplayQuality.Green => Level.Green,
             DisplayQuality.Blue => Level.Blue,
             DisplayQuality.Purple => Level.Purple,
@@ -68,12 +68,12 @@ internal static class ColorLevel {
     }
     static Level GetLevelBySellPrice(int sellPrice) {
         return sellPrice switch {
-            >=10000 => Level.Red,
-            >=5000 =>Level.LightRed,
-            >=2500=>Level.Orange,
-            >=1200=>Level.Purple,
-            >=600 => Level.Blue,
-            >=200 => Level.Green,
+            >= 10000 => Level.Red,
+            >= 5000 => Level.LightRed,
+            >= 2500 => Level.Orange,
+            >= 1200 => Level.Purple,
+            >= 600 => Level.Blue,
+            >= 200 => Level.Green,
             _ => Level.Transparent,
         };
     }
@@ -87,7 +87,7 @@ internal static class ColorLevel {
     }
     public static Level GetBulletLevel(IItemMeta itemMeta) {
         var displayQuality = itemMeta.DisplayQuality;
-        if (displayQuality != DisplayQuality.None){
+        if (displayQuality != DisplayQuality.None) {
             if (displayQuality == DisplayQuality.Orange) {
                 return Level.LightRed;
             }
@@ -109,7 +109,7 @@ internal static class ColorLevel {
             return GetLevelByQuality(quality);
         }
         // 特殊四级配件 None -> Blue -> Purple -> Orange
-        var displayQuality= itemMeta.DisplayQuality;
+        var displayQuality = itemMeta.DisplayQuality;
         if (displayQuality == DisplayQuality.None) {
             return Level.Green;
         }
@@ -130,8 +130,8 @@ internal static class ColorLevel {
         if (itemMeta.TypeID == 862 || itemMeta.TypeID == 1238) { // 带火AK、MF毒液与AK、MF数据一致，特判
             return Level.Orange;
         }
-        
-        if(ItemAssetsCollection.TryGetDynamicEntry(itemMeta.TypeID, out _)) { // Mod增加物品
+
+        if (ItemAssetsCollection.TryGetDynamicEntry(itemMeta.TypeID, out _)) { // Mod增加物品
             return GetModItemLevel(itemMeta);
         }
 

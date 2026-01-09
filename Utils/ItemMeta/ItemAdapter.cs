@@ -1,8 +1,6 @@
 using Duckov.Utilities;
 using ItemStatsSystem;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace EnhancedItemInfo.Utils.ItemMeta;
 

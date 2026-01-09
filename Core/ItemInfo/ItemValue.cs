@@ -8,7 +8,7 @@ internal class ItemValue: ItemInfoUI<ItemValue> {
     public static bool enable = true;
     protected override bool Enable => enable;
 
-    public static ItemCount Instance { get => field ??= new(); } = null;
+    public static ItemValue Instance { get => field ??= new(); } = null;
 
     protected override bool Setup(Item item) {
         SetText($"${item.GetTotalRawValue() / 2f:0.##}");

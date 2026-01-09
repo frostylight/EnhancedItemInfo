@@ -9,7 +9,7 @@ namespace EnhancedItemInfo.Extensions;
 public static class ItemMetaExtension {
     public static IItemMeta GetMeta(this Item item) => new ItemAdapter(item);
     public static IItemMeta GetMeta(this ItemMetaData itemMetaData) => new ItemMetaDataAdapter(itemMetaData);
-    
+
     public static bool HasTag(this IItemMeta itemMeta, string tag) {
         var tags = itemMeta.Tags;
         if (tags == null) {
@@ -34,13 +34,13 @@ public static class ItemMetaExtension {
     public static bool IsBullet(this IItemMeta itemMeta) {
         return itemMeta.HasTag(Constant.ItemBulletTag);
     }
-    public static bool IsAccessory(this IItemMeta itemMeta) { 
+    public static bool IsAccessory(this IItemMeta itemMeta) {
         return itemMeta.HasTag(Constant.ItemAccessoryTag);
     }
-    public static bool IsEquipment(this IItemMeta itemMeta) { 
+    public static bool IsEquipment(this IItemMeta itemMeta) {
         return itemMeta.HasTag(Constant.ItemEquipmentTag);
     }
-    public static bool IsSpecial(this IItemMeta itemMeta) { 
+    public static bool IsSpecial(this IItemMeta itemMeta) {
         return itemMeta.HasTag(Constant.ItemSpecialTag);
     }
 }

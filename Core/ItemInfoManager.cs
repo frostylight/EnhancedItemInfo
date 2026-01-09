@@ -3,9 +3,10 @@ using EnhancedItemInfo.Attributes;
 using EnhancedItemInfo.Core.ItemInfo;
 using EnhancedItemInfo.Core.ItemLevel;
 using EnhancedItemInfo.Extensions;
-using EnhancedItemInfo.Utils;
 using HarmonyLib;
 using ItemStatsSystem;
+using System;
+using System.Reflection;
 using TMPro;
 using UnityEngine;
 using Logger = EnhancedItemInfo.Utils.Logger;
@@ -17,11 +18,28 @@ internal static class ItemInfoManager {
     [ToggleConfig("ColoredInfo", "物品信息颜色")]
     public static bool EnableColoredInfo = true;
 
+    [ToggleConfig("ItemProperties", "显示物品参数（黑市、商店）")]
+    public static bool EnableItemProperties = true;
+    static FieldInfo? FieldItemProperties = null;
+    static Action<ItemPropertiesDisplay, Item>? SetupItemProperties = null;
+
     public static void Init() {
         Logger.Info($"{nameof(ItemInfoManager)} is registered");
 
         ModBehaviour.OnSetup += OnSetup;
         ModBehaviour.OnDeactivate += OnDeactivate;
+
+        FieldItemProperties = AccessTools.DeclaredField(typeof(ItemHoveringUI), "itemProperties");
+        if (FieldItemProperties == null) {
+            Logger.Error($"Failed to get ItemHoveringUI.itemProperties");
+        }
+        var method = AccessTools.DeclaredMethod(typeof(ItemPropertiesDisplay), "Setup", [typeof(Item)]);
+        if (method == null) {
+            Logger.Error($"Failed to get ItemPropertiesDisplay");
+        }
+        else {
+            SetupItemProperties = (Action<ItemPropertiesDisplay, Item>)method.CreateDelegate(typeof(Action<ItemPropertiesDisplay, Item>));
+        }
     }
     public static void OnSetup() {
         Logger.Info($"{nameof(ItemInfoManager)} is enabled");
@@ -50,6 +68,26 @@ internal static class ItemInfoManager {
 
         Color color = EnableColoredInfo ? data.GetMeta().GetLevelColor().WithAlpha(1f) : Color.white;
         Traverse.Create(uiInstance).Field("itemName").GetValue<TextMeshProUGUI>()?.color = color;
+
+
+        if (EnableItemProperties) {
+            do {
+                if (FieldItemProperties == null || SetupItemProperties == null) {
+                    EnableItemProperties = false;
+                    break;
+                }
+                try {
+                    var itemProperties = (ItemPropertiesDisplay)FieldItemProperties.GetValue(uiInstance);
+                    var prefab = ItemAssetsCollection.GetPrefab(data.id);
+                    SetupItemProperties(itemProperties, prefab);
+                    itemProperties.gameObject.SetActive(true);
+                }
+                catch (Exception ex) {
+                    Logger.Error($"Failed to setup ItemPropertiesDisplay", ex);
+                    EnableItemProperties = false;
+                }
+            } while (false);
+        }
 
         ItemCount.Instance.SetupAndShow(uiInstance, data);
         ItemRequirement.Instance.SetupAndShow(uiInstance, data);

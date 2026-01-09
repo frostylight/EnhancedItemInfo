@@ -32,7 +32,11 @@ internal class ConfigItem<T>: IConfigItem {
         OnValueChanged = null;
     }
     public ConfigItem(FieldInfo field, string key, string description, Type type, string onValueChanged) : this(field, key, description) {
-        OnValueChanged = (Action<T>)Delegate.CreateDelegate(type, AccessTools.DeclaredMethod(type, onValueChanged));
+        if (string.IsNullOrEmpty(onValueChanged)) {
+            return;
+        }
+        var method = AccessTools.DeclaredMethod(type, onValueChanged) ?? throw new MissingMethodException(type.FullName, onValueChanged);
+        OnValueChanged = (Action<T>)Delegate.CreateDelegate(type, method);
     }
 
     public override int GetHashCode() => Key.GetHashCode();
