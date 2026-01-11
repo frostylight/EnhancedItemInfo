@@ -18,7 +18,7 @@ internal static class ItemInfoManager {
     [ToggleConfig("ColoredInfo", "物品信息颜色")]
     public static bool EnableColoredInfo = true;
 
-    [ToggleConfig("ItemProperties", "显示物品参数（黑市、商店）")]
+    [ToggleConfig("ItemProperties", "显示物品参数（黑市）")]
     public static bool EnableItemProperties = true;
     static FieldInfo? FieldItemProperties = null;
     static Action<ItemPropertiesDisplay, Item>? SetupItemProperties = null;

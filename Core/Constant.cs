@@ -4,6 +4,8 @@ using UnityEngine;
 namespace EnhancedItemInfo.Core;
 
 public static class Constant {
+    public const int CashTypeID = 451;
+
     public const string ItemBulletTag = "Bullet";
     public const string ItemAccessoryTag = "Accessory";
     public const string ItemEquipmentTag = "Equipment";

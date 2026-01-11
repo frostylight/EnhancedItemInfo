@@ -39,8 +39,6 @@ internal class ConfigItem<T>: IConfigItem {
         OnValueChanged = (Action<T>)Delegate.CreateDelegate(type, method);
     }
 
-    public override int GetHashCode() => Key.GetHashCode();
-
     public Type ValueType => typeof(T);
     public object? GetValue() => Value;
     public void SetValue(object? value) => Value = (T)value!;

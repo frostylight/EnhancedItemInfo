@@ -36,13 +36,13 @@ internal static class ColorLevel {
     /// <summary>
     /// 每种物品稀有度颜色的缓存
     /// </summary>
-    public static readonly Dictionary<int, Level> itemLevelCache = [];
+    public static readonly Dictionary<int, Level> ItemLevelCache = [];
     public static Level GetLevel(this IItemMeta itemMeta) {
-        if (itemLevelCache.TryGetValue(itemMeta.TypeID, out Level level)) {
+        if (ItemLevelCache.TryGetValue(itemMeta.TypeID, out Level level)) {
             return level;
         }
         level = GetLevelWithoutCache(itemMeta);
-        itemLevelCache.Add(itemMeta.TypeID, level);
+        ItemLevelCache.Add(itemMeta.TypeID, level);
         return level;
     }
     public static Color GetLevelColor(this IItemMeta itemMeta) {

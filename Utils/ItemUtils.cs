@@ -20,10 +20,26 @@ public static class ItemUtils {
     }
     /// <summary>
     /// 获取特定ID物品在仓库的数量 <br/>
-    /// 不包括插槽内物品
+    /// 不包括插槽内物品 <br/>
+    /// 这个方法在基地外会返回缓存数量
     /// </summary>
     /// <param name="typeID">物品ID</param>
     public static int GetItemCountInStorage(int typeID) {
+        if (Patches_PlayStorage.Cache) {
+            if (Patches_PlayStorage.ItemCountCache.TryGetValue(typeID, out int count)) {
+                return count;
+            }
+            return 0;
+        }
+        return GetCurrentItemCountInStorage(typeID);
+    }
+    /// <summary>
+    /// 获取特定ID物品在仓库的数量 <br/>
+    /// 不包括插槽内物品 <br/>
+    /// 这个方法不会使用缓存，在基地外会返回0
+    /// </summary>
+    /// <param name="typeID">物品ID</param>
+    public static int GetCurrentItemCountInStorage(int typeID) {
         Inventory? playerStorage = PlayerStorage.Inventory;
         if (playerStorage == null) {
             Logger.Warn("Null player storage");
@@ -87,7 +103,7 @@ public static class ItemUtils {
         return 0;
     }
     public static long GetBuildingRequirement(int typeID) {
-        if (Patch_BuildingManager.itemBuildingCount.TryGetValue(typeID, out long requirement)) {
+        if (Patches_BuildingManager.itemBuildingCount.TryGetValue(typeID, out long requirement)) {
             return requirement;
         }
         return 0;

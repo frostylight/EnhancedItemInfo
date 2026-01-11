@@ -11,23 +11,23 @@ namespace EnhancedItemInfo.Patches;
 [Patch]
 [NeedSetup]
 [HarmonyPatch(typeof(BuildingManager))]
-internal class Patch_BuildingManager {
+internal class Patches_BuildingManager {
     // 每种物品的建筑需求
     public static readonly Dictionary<int, long> itemBuildingCount = [];
 
     public static void Init() {
-        Logger.Info($"{nameof(Patch_BuildingManager)} is registered");
+        Logger.Info($"{nameof(Patches_BuildingManager)} is registered");
 
         ModBehaviour.OnSetup += OnSetup;
         ModBehaviour.OnDeactivate += OnDeactivate;
     }
     public static void OnSetup() {
-        Logger.Info($"{nameof(Patch_BuildingManager)} is enabled");
+        Logger.Info($"{nameof(Patches_BuildingManager)} is enabled");
 
         BuildingManager.OnBuildingBuiltComplex += OnBuildingBuilt;
     }
     public static void OnDeactivate() {
-        Logger.Info($"{nameof(Patch_BuildingManager)} is disabled");
+        Logger.Info($"{nameof(Patches_BuildingManager)} is disabled");
 
         BuildingManager.OnBuildingBuiltComplex -= OnBuildingBuilt;
     }

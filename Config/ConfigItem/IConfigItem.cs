@@ -13,4 +13,6 @@ internal interface IConfigItem {
     public void SetValue(object? value);
 
     public void CallbackObject(object? value);
+
+    public int GetHashCode() => Key.GetHashCode();
 }
