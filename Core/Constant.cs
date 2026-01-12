@@ -1,15 +1,16 @@
+using Duckov.Utilities;
 using EnhancedItemInfo.Utils;
 using UnityEngine;
 
 namespace EnhancedItemInfo.Core;
 
 public static class Constant {
-    public const int CashTypeID = 451;
+    public static readonly int CashTypeID = GameplayDataSettings.ItemAssets.CashItemTypeID;
 
-    public const string ItemBulletTag = "Bullet";
+    public static readonly string ItemBulletTag = GameplayDataSettings.Tags.Bullet.name;
     public const string ItemAccessoryTag = "Accessory";
     public const string ItemEquipmentTag = "Equipment";
-    public const string ItemSpecialTag = "Special";
+    public static readonly string ItemSpecialTag = GameplayDataSettings.Tags.Special.name;
     public const string ItemKeyTag = "Key";
     public const string ItemFormulaTag = "Formula_Blueprint";
 

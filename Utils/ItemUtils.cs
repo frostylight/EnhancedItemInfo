@@ -2,6 +2,7 @@ using Duckov.Economy;
 using EnhancedItemInfo.Core;
 using EnhancedItemInfo.Patches;
 using ItemStatsSystem;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace EnhancedItemInfo.Utils;
@@ -116,11 +117,10 @@ public static class ItemUtils {
     }
 
     public static Cost.ItemEntry[] GetDecomposeItems(int typeID) {
-        var formula = DecomposeDatabase.Instance.GetFormula(typeID);
-        if (!formula.valid) {
-            return [];
-        }
-        return formula.result.items;
+        return Patch_DecomposeDatabase_RebuildDictionary.GetFormulaByTypeID(typeID);
+    }
+    public static HashSet<(int, long)> GetDecomposeFromItems(int typeID) {
+        return Patch_DecomposeDatabase_RebuildDictionary.GetDecomposeFromByTypeID(typeID);
     }
 
     public static bool IsKeyOrFormula(this ItemMetaData itemMetaData) {
