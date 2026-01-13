@@ -14,7 +14,10 @@
 * 可通过 ModSetting 在游戏中配置
 * 在余额旁显示现有现金数量（在基地外不包含仓库数量）
 
-### TODO
+## 已知问题
+* 物品需求可能包括未实装任务、强化、建筑
+
+## TODO
 * 优化信息显示
 * 做了很多提前优化和没用的工具类，代码清理？
 * 可配置化（优化、接入 ModConfig）
@@ -36,4 +39,4 @@
 
 使用[ILSpy](https://github.com/icsharpcode/ILSpy)查看游戏代码
 
-使用[Harmony](https://github.com/pardeike/Harmony)进行游戏代码修改，参考了其[文档](https://harmony.pardeike.net)
+使用[Harmony](https://github.com/pardeike/Harmony)进行游戏代码修改，[文档](https://harmony.pardeike.net)

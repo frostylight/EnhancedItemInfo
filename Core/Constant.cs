@@ -1,6 +1,8 @@
+using Duckov;
 using Duckov.Utilities;
 using EnhancedItemInfo.Utils;
 using UnityEngine;
+using Logger = EnhancedItemInfo.Utils.Logger;
 
 namespace EnhancedItemInfo.Core;
 
@@ -33,4 +35,18 @@ public static class Constant {
     public const string durabilityUsageDescriptionKey = "Usage_Durability";
 
     public const string ModSettingAPI_FullName = "ModSetting.ModBehaviour";
+
+    public static int MaxLevel {
+        get {
+            if (field == -1) {
+                var expManager = EXPManager.Instance;
+                if (expManager == null) {
+                    return 99; // 可能会随版本更新
+                }
+                field = expManager.LevelFromExp(long.MaxValue); // 真 最大等级
+                Logger.Debug($"MaxLevel {field}");
+            }
+            return field;
+        }
+    } = -1;
 }

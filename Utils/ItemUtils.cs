@@ -97,29 +97,20 @@ public static class ItemUtils {
         return 0;
     }
 
-    public static int GetQuestRequirement(int typeID) {
-        if (Patch_QuestManager_SetupSaveData.itemQuestCount.TryGetValue(typeID, out int requirement)) {
-            return requirement;
-        }
-        return 0;
+    public static IEnumerable<(string Name, int Amount)> GetQuestRequirement(int typeID) {
+        return Patch_QuestManager_SetupSaveData.GetQuestRequirement(typeID);
     }
-    public static long GetBuildingRequirement(int typeID) {
-        if (Patches_BuildingManager.itemBuildingCount.TryGetValue(typeID, out long requirement)) {
-            return requirement;
-        }
-        return 0;
+    public static IEnumerable<(string Name, long Amount)> GetBuildingRequirement(int typeID) {
+        return Patches_BuildingManager.GetBuildingRequirement(typeID);
     }
-    public static long GetPerkRequirement(int typeID) {
-        if (Patch_PerkTree_SetupSaveData.itemPerkCount.TryGetValue(typeID, out long requirement)) {
-            return requirement;
-        }
-        return 0;
+    public static IEnumerable<(string Name, long Amount)> GetPerkRequirement(int typeID) {
+        return Patch_PerkTree_SetupSaveData.GetPerkRequirement(typeID);
     }
 
     public static Cost.ItemEntry[] GetDecomposeItems(int typeID) {
         return Patch_DecomposeDatabase_RebuildDictionary.GetFormulaByTypeID(typeID);
     }
-    public static HashSet<(int, long)> GetDecomposeFromItems(int typeID) {
+    public static Dictionary<int, long> GetDecomposeFromItems(int typeID) {
         return Patch_DecomposeDatabase_RebuildDictionary.GetDecomposeFromByTypeID(typeID);
     }
 

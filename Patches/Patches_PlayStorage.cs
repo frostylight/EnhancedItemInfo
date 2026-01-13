@@ -6,10 +6,36 @@ using System.Collections.Generic;
 namespace EnhancedItemInfo.Patches;
 
 [Patch]
+[NeedSetup]
 [HarmonyPatch(typeof(PlayerStorage))]
 internal static class Patches_PlayStorage {
     public static readonly Dictionary<int, int> ItemCountCache = [];
     public static bool Cache { get; private set; }
+
+    public static void Init() {
+        Logger.Info($"{nameof(Patches_PlayStorage)} is registered");
+
+        ModBehaviour.OnSetup += OnSetup;
+        ModBehaviour.OnDeactivate += OnDeactivate;
+    }
+
+    public static void OnSetup() {
+        Logger.Info($"{nameof(Patches_PlayStorage)} is enabled");
+
+        Patch_LevelManager_OnNewBoot.OnNewBoot += OnNewBoot;
+    }
+
+    public static void OnDeactivate() {
+        Logger.Info($"{nameof(Patches_PlayStorage)} is disabled");
+
+        Patch_LevelManager_OnNewBoot.OnNewBoot -= OnNewBoot;
+    }
+
+    public static void OnNewBoot() {
+        Logger.Debug($"Clear cache before new boot");
+        Cache = false;
+        ItemCountCache.Clear();
+    }
 
     [HarmonyPostfix]
     [HarmonyPatch("Awake")]

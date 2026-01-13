@@ -1,33 +1,40 @@
 using Duckov.PerkTrees;
 using EnhancedItemInfo.Attributes;
+using EnhancedItemInfo.Extensions;
 using EnhancedItemInfo.Utils;
 using HarmonyLib;
 using ItemStatsSystem;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace EnhancedItemInfo.Patches;
 
 [Patch]
 [HarmonyPatch(typeof(PerkTree), nameof(PerkTree.SetupSaveData))]
 internal static class Patch_PerkTree_SetupSaveData {
-    internal static readonly Dictionary<int, long> itemPerkCount = [];
+    static readonly Dictionary<int, Dictionary<Perk, long>> itemPerkCount = [];
     static readonly HashSet<string> CheckedPerkTrees = [];
     static readonly HashSet<Perk> LockedPerks = [];
+
+    public static IEnumerable<(string Name, long Amount)> GetPerkRequirement(int typeID) {
+        if (itemPerkCount.TryGetValue(typeID, out var dict)) {
+            return dict.AsEnumerable().Select(kv => (Name: $"{kv.Key.Master.DisplayName}.{kv.Key.DisplayName}", Amount: kv.Value));
+        }
+        return [];
+    }
 
     static void Postfix(PerkTree __instance) {
         if (CheckedPerkTrees.Contains(__instance.ID)) {
             Logger.Info("Clear old perk data");
-            // 新存档，清除旧数据
+            // 清除旧数据
             itemPerkCount.Clear();
             CheckedPerkTrees.Clear();
             foreach (var perk in LockedPerks) {
-                if (perk == null) {
-                    continue;
-                }
-                perk.onUnlockStateChanged -= OnPerkUnlocked;
+                perk?.onUnlockStateChanged -= OnPerkUnlocked;
             }
             LockedPerks.Clear();
         }
+
         Logger.Info($"Init perk tree {__instance.DisplayName}");
         CheckedPerkTrees.Add(__instance.ID);
         foreach (Perk? perk in __instance.Perks) {
@@ -39,12 +46,18 @@ internal static class Patch_PerkTree_SetupSaveData {
             }
             LockedPerks.Add(perk);
             perk.onUnlockStateChanged += OnPerkUnlocked;
+            Logger.Debug($"\tPerk {perk.DisplayName}");
             foreach (var item in perk.Requirement.cost.items) {
-                if (itemPerkCount.TryGetValue(item.id, out long preValue)) {
-                    itemPerkCount[item.id] = preValue + item.amount;
+#if DEBUG
+                var itemMetaData = ItemAssetsCollection.GetMetaData(item.id);
+                Logger.Debug($"\t\t{itemMetaData.DisplayName} {item.amount}");
+#endif
+                var dict = itemPerkCount.GetOrCreate(item.id);
+                if (dict.TryGetValue(perk, out long amount)) {
+                    dict[perk] = amount + item.amount;
                 }
                 else {
-                    itemPerkCount[item.id] = item.amount;
+                    dict.Add(perk, item.amount);
                 }
             }
         }
@@ -54,21 +67,12 @@ internal static class Patch_PerkTree_SetupSaveData {
         if (!LockedPerks.Contains(perk)) {
             return;
         }
-        if (!perk.Unlocked & !perk.Unlocking) {
+        if (!perk.Unlocked && !perk.Unlocking) {
             return;
         }
         LockedPerks.Remove(perk);
         foreach (var item in perk.Requirement.cost.items) {
-            if (itemPerkCount.TryGetValue(item.id, out long preValue)) {
-                itemPerkCount[item.id] = preValue - item.amount;
-            }
-            else {
-                Logger.Warn($"Perk {perk.DisplayName} requirement not recorded");
-#if DEBUG
-                var itemMetaData = ItemAssetsCollection.GetMetaData(item.id);
-                Logger.Debug($"\t{itemMetaData.DisplayName} {item.amount}");
-#endif
-            }
+            itemPerkCount.GetOrCreate(item.id).Remove(perk);
         }
     }
 }

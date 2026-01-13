@@ -1,4 +1,3 @@
-using Duckov.UI;
 using Duckov.Utilities;
 using EnhancedItemInfo.Core.ItemLevel;
 using EnhancedItemInfo.Extensions;
@@ -30,31 +29,35 @@ internal abstract class ItemInfoUI<T> where T : ItemInfoUI<T> {
 
     protected abstract bool Setup(Item item);
     protected abstract bool Setup(ItemMetaData itemMetaData);
-    public void SetupAndShow(ItemHoveringUI uiInstance, Item item) {
+    public bool SetupAndShow(Transform parent, Item item) {
         if (!Enable) {
-            return;
+            return false;
         }
         if (Setup(item)) {
             if (ColoredInfo) {
                 SetColor(item.GetMeta().GetLevelColor().WithAlpha(1f));
             }
-            SetParent(uiInstance.LayoutParent);
+            SetParent(parent);
             SetAsLastSibling();
             Show();
+            return true;
         }
+        return false;
     }
-    public void SetupAndShow(ItemHoveringUI uiInstance, ItemMetaData itemMetaData) {
+    public bool SetupAndShow(Transform parent, ItemMetaData itemMetaData) {
         if (!Enable) {
-            return;
+            return false;
         }
         if (Setup(itemMetaData)) {
             if (ColoredInfo) {
                 SetColor(itemMetaData.GetMeta().GetLevelColor().WithAlpha(1f));
             }
-            SetParent(uiInstance.LayoutParent);
+            SetParent(parent);
             SetAsLastSibling();
             Show();
+            return true;
         }
+        return false;
     }
 
     public T Hide() {

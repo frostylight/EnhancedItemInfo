@@ -33,6 +33,13 @@
 		<Reference Include="$(DuckovManagedPath)Unity*">
 			<Private>False</Private>
 		</Reference>
+
+		<Reference Include="$(DuckovManagedPath)NodeCanvas.dll">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="$(DuckovManagedPath)ParadoxNotion.dll">
+			<Private>False</Private>
+		</Reference>
 		
 		<!-- 游戏自带JSON -->
 		<Reference Include="$(DuckovManagedPath)Newtonsoft.Json.dll">

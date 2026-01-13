@@ -1,10 +1,11 @@
 using Duckov.Buildings;
 using Duckov.Economy;
 using EnhancedItemInfo.Attributes;
+using EnhancedItemInfo.Extensions;
 using EnhancedItemInfo.Utils;
 using HarmonyLib;
-using ItemStatsSystem;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace EnhancedItemInfo.Patches;
 
@@ -13,7 +14,15 @@ namespace EnhancedItemInfo.Patches;
 [HarmonyPatch(typeof(BuildingManager))]
 internal class Patches_BuildingManager {
     // 每种物品的建筑需求
-    public static readonly Dictionary<int, long> itemBuildingCount = [];
+    static readonly Dictionary<int, Dictionary<string, long>> itemBuildingCount = [];
+    static readonly Dictionary<string, string> BuildingName = [];
+
+    public static IEnumerable<(string Name, long Amount)> GetBuildingRequirement(int typeID) {
+        if (itemBuildingCount.TryGetValue(typeID, out var dict)) {
+            return dict.AsEnumerable().Select(kv => (Name: BuildingName[kv.Key], Amount: kv.Value));
+        }
+        return [];
+    }
 
     public static void Init() {
         Logger.Info($"{nameof(Patches_BuildingManager)} is registered");
@@ -32,20 +41,17 @@ internal class Patches_BuildingManager {
         BuildingManager.OnBuildingBuiltComplex -= OnBuildingBuilt;
     }
 
-    static void AddCost(Cost cost, int amount) {
+    static void AddCost(string id, Cost cost, int scale) {
         foreach (var item in cost.items) {
-            if (itemBuildingCount.TryGetValue(item.id, out long preValue)) {
-                itemBuildingCount[item.id] = preValue + item.amount * amount;
+            var dict = itemBuildingCount.GetOrCreate(item.id);
+            if (dict.TryGetValue(id, out var amount)) {
+                dict[id] = amount + item.amount * scale;
             }
             else {
-                if (amount < 0) {
-                    Logger.Warn($"Building requirement not recorded!");
-#if DEBUG
-                    var itemMetaData = ItemAssetsCollection.GetMetaData(item.id);
-                    Logger.Debug($"\t{itemMetaData.DisplayName} {item.amount}");
-#endif
+                if (scale < 0) {
+                    Logger.Warn($"Building Requirement not recorded");
                 }
-                itemBuildingCount[item.id] = item.amount * amount;
+                dict.Add(id, item.amount * scale);
             }
         }
     }
@@ -66,7 +72,7 @@ internal class Patches_BuildingManager {
             // 重建不消耗资源
             return;
         }
-        AddCost(info.cost, -1);
+        AddCost(info.id, info.cost, -1);
     }
 
     [HarmonyPostfix]
@@ -90,7 +96,8 @@ internal class Patches_BuildingManager {
                 // 到达数量上限
                 continue;
             }
-            AddCost(info.cost, amount);
+            BuildingName[info.id] = info.DisplayName;
+            AddCost(info.id, info.cost, amount);
         }
     }
 }

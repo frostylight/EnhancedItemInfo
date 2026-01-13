@@ -23,6 +23,8 @@ internal static class ItemInfoManager {
     static FieldInfo? FieldItemProperties = null;
     static Action<ItemPropertiesDisplay, Item>? SetupItemProperties = null;
 
+    public static SidePanel Panel = new("SidePanel");
+
     public static void Init() {
         Logger.Info($"{nameof(ItemInfoManager)} is registered");
 
@@ -89,11 +91,16 @@ internal static class ItemInfoManager {
             } while (false);
         }
 
-        ItemCount.Instance.SetupAndShow(uiInstance, data);
-        ItemRequirement.Instance.SetupAndShow(uiInstance, data);
-        ItemWeight.Instance.SetupAndShow(uiInstance, data);
-        ItemValue.Instance.SetupAndShow(uiInstance, data);
-        ItemDecompose.Instance.SetupAndShow(uiInstance, data);
+        var parent = uiInstance.LayoutParent;
+        ItemCount.Instance.SetupAndShow(parent, data);
+        ItemWeight.Instance.SetupAndShow(parent, data);
+        ItemValue.Instance.SetupAndShow(parent, data);
+
+        var show = false;
+        show |= ItemRequirement.Instance.SetupAndShow(Panel.LayoutParent, data);
+        show |= ItemDecompose.Instance.SetupAndShow(Panel.LayoutParent, data);
+        Panel.SetActive(show);
+
     }
     public static void OnSetupItemHoveringUI(ItemHoveringUI uiInstance, Item? item) {
         HideAllText();
@@ -104,11 +111,15 @@ internal static class ItemInfoManager {
         Color color = EnableColoredInfo ? item.GetMeta().GetLevelColor().WithAlpha(1f) : Color.white;
         Traverse.Create(uiInstance).Field("itemName").GetValue<TextMeshProUGUI>()?.color = color;
 
-        ItemCount.Instance.SetupAndShow(uiInstance, item);
-        ItemDurability.Instance.SetupAndShow(uiInstance, item);
-        ItemRequirement.Instance.SetupAndShow(uiInstance, item);
-        ItemWeight.Instance.SetupAndShow(uiInstance, item);
-        ItemValue.Instance.SetupAndShow(uiInstance, item);
-        ItemDecompose.Instance.SetupAndShow(uiInstance, item);
+        var parent = uiInstance.LayoutParent;
+        ItemCount.Instance.SetupAndShow(parent, item);
+        ItemDurability.Instance.SetupAndShow(parent, item);
+        ItemWeight.Instance.SetupAndShow(parent, item);
+        ItemValue.Instance.SetupAndShow(parent, item);
+
+        var show = false;
+        show |= ItemRequirement.Instance.SetupAndShow(Panel.LayoutParent, item);
+        show |= ItemDecompose.Instance.SetupAndShow(Panel.LayoutParent, item);
+        Panel.SetActive(show);
     }
 }
