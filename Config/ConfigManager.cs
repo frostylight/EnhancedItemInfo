@@ -9,10 +9,25 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using UnityEngine;
+using Logger = EnhancedItemInfo.Utils.Logger;
 
 namespace EnhancedItemInfo.Config;
 
 internal static class ConfigManager {
+    public static string ConfigRoot {
+        get {
+            var root = Application.persistentDataPath;
+            if (string.IsNullOrEmpty(root)) {
+                root = Directory.GetCurrentDirectory();
+            }
+            if (string.IsNullOrEmpty(root)) {
+                root = ".";
+            }
+            return Path.Combine(root, "EnhancedItemInfo");
+        }
+    }
+
     public static bool Inited { get; private set; } = false;
     public static ModInfo modInfo;
     public static bool ModSettingEnable { get; private set; } = false;
@@ -99,14 +114,14 @@ internal static class ConfigManager {
                 }
             }
         }
-
-        Load();
         Inited = true;
+        Load();
     }
 
     public static void OnSetup() {
         ModSettingEnable = ModSettingAPI.Init(modInfo);
         if (ModSettingEnable) {
+            ModSettingAPI.AddButton("OpenConfig", "EnhancedItemInfo_Config_OpenConfig".ToLocalization(), "Open", OpenConfigFolder);
             configItems.ForEach(item => {
                 switch (item) {
                     case Toggle toggle: {
@@ -131,8 +146,30 @@ internal static class ConfigManager {
         }
     }
 
+    public static void OpenConfigFolder() {
+        Save();
+        Application.OpenURL($"file://{ConfigRoot}");
+    }
+
     public static void Load() {
-        string path = Path.Combine(modInfo.path, "config.json");
+        string root = ConfigRoot;
+        if (!Directory.Exists(root)) {
+            try {
+                Directory.CreateDirectory(root);
+            }
+            catch (Exception ex) {
+                Logger.Error($"Failed to create dir : {root}", ex);
+                root = modInfo.path;
+            }
+        }
+        string path = Path.Combine(root, "Config.json");
+        string oldConfig = Path.Combine(modInfo.path, "Config.json");
+        if (File.Exists(oldConfig)) {
+            if (File.Exists(path)) {
+                File.Delete(path);
+            }
+            File.Move(oldConfig, path);
+        }
         if (!File.Exists(path)) {
             return;
         }
@@ -166,7 +203,17 @@ internal static class ConfigManager {
         if (!Inited) {
             return;
         }
-        string path = Path.Combine(modInfo.path, "config.json");
+        string root = ConfigRoot;
+        if (!Directory.Exists(root)) {
+            try {
+                Directory.CreateDirectory(root);
+            }
+            catch (Exception ex) {
+                Logger.Error($"Failed to create dir : {root}", ex);
+                root = modInfo.path;
+            }
+        }
+        string path = Path.Combine(root, "Config.json");
         Dictionary<string, object> setting = [];
         setting.Add("Version", modInfo.version);
         foreach (var item in configItems) {

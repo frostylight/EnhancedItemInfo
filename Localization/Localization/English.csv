@@ -14,6 +14,7 @@ EnhancedItemInfo_Config_CashDisplay, Show Cash Next to Balance
 EnhancedItemInfo_Config_ItemRequirement, Item Requirements
 EnhancedItemInfo_Config_FontSize, Font Size
 EnhancedItemInfo_Config_ItemInfo, Item Information
+EnhancedItemInfo_Config_OpenConfig, Open Config Directory (Edit after game stoped)
 
 Usage_Durability,
 
