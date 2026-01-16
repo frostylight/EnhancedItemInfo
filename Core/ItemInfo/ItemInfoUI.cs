@@ -1,3 +1,4 @@
+using Duckov.UI;
 using Duckov.Utilities;
 using EnhancedItemInfo.Core.ItemLevel;
 using EnhancedItemInfo.Extensions;
@@ -15,7 +16,7 @@ internal abstract class ItemInfoUI<T> where T : ItemInfoUI<T> {
                 _text = UnityEngine.Object.Instantiate(GameplayDataSettings.UIStyle.TemplateTextUGUI);
                 _text.gameObject.SetActive(false);
                 _text.transform.localScale = Vector3.one;
-                _text.fontSize = 18f;
+                _text.fontSize = ItemInfoManager.FontSize;
             }
             return _text;
         }
@@ -24,40 +25,57 @@ internal abstract class ItemInfoUI<T> where T : ItemInfoUI<T> {
     protected bool Instantiated => _text != null && _text;
     protected virtual bool Enable => true;
     protected virtual bool ColoredInfo => ItemInfoManager.EnableColoredInfo;
+    protected virtual bool Side => false;
     protected T Self => (T)this;
-    protected ItemInfoUI() { }
+    protected ItemInfoUI() {
+        ItemInfoManager.OnFontSizeChanged += OnFontSizeChange;
+    }
+
+    void OnFontSizeChange(float fontSize) {
+        SetFontSize(fontSize);
+    }
 
     protected abstract bool Setup(Item item);
     protected abstract bool Setup(ItemMetaData itemMetaData);
-    public bool SetupAndShow(Transform parent, Item item) {
+    public void SetupAndShow(ItemHoveringUI ui, Item item) {
+        Hide();
         if (!Enable) {
-            return false;
+            return;
         }
         if (Setup(item)) {
             if (ColoredInfo) {
                 SetColor(item.GetMeta().GetLevelColor().WithAlpha(1f));
             }
-            SetParent(parent);
+            if (Side) {
+                SetParent(ItemInfoManager.Panel.LayoutParent);
+                ItemInfoManager.Panel.Show();
+            }
+            else {
+                SetParent(ui.LayoutParent);
+            }
             SetAsLastSibling();
             Show();
-            return true;
         }
-        return false;
     }
-    public bool SetupAndShow(Transform parent, ItemMetaData itemMetaData) {
+    public void SetupAndShow(ItemHoveringUI ui, ItemMetaData itemMetaData) {
+        Hide();
         if (!Enable) {
-            return false;
+            return;
         }
         if (Setup(itemMetaData)) {
             if (ColoredInfo) {
                 SetColor(itemMetaData.GetMeta().GetLevelColor().WithAlpha(1f));
             }
-            SetParent(parent);
+            if (Side) {
+                SetParent(ItemInfoManager.Panel.LayoutParent);
+                ItemInfoManager.Panel.Show();
+            }
+            else {
+                SetParent(ui.LayoutParent);
+            }
             SetAsLastSibling();
             Show();
-            return true;
         }
-        return false;
     }
 
     public T Hide() {
@@ -97,7 +115,9 @@ internal abstract class ItemInfoUI<T> where T : ItemInfoUI<T> {
         return Self;
     }
     protected T SetFontSize(float fontSize) {
-        Text.fontSize = fontSize;
+        if (Instantiated) {
+            Text.fontSize = fontSize;
+        }
         return Self;
     }
 

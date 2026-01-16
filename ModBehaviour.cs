@@ -1,6 +1,7 @@
 using EnhancedItemInfo.Config;
 using EnhancedItemInfo.Core;
 using EnhancedItemInfo.Extensions;
+using EnhancedItemInfo.Localization;
 using EnhancedItemInfo.Utils;
 using HarmonyLib;
 using System;
@@ -54,7 +55,8 @@ public class ModBehaviour: Duckov.Modding.ModBehaviour {
                 Patchs.Add(type);
             }
         }
-        Logger.Info($"Init Setting");
+        Logger.Info($"Init Localization & Config");
+        LocalizationManager.Init(info);
         ConfigManager.Init(info);
         Inited = true;
     }

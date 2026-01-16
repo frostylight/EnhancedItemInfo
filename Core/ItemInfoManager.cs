@@ -14,16 +14,27 @@ using Logger = EnhancedItemInfo.Utils.Logger;
 namespace EnhancedItemInfo.Core;
 
 [NeedSetup]
+[ConfigGroup("ItemInfo", "EnhancedItemInfo_Config_ItemInfo", 0.5f, true)]
 internal static class ItemInfoManager {
-    [ToggleConfig("ColoredInfo", "物品信息颜色")]
+    [ToggleConfig("ColoredInfo", "EnhancedItemInfo_Config_ColoredInfo")]
     public static bool EnableColoredInfo = true;
 
-    [ToggleConfig("ItemProperties", "显示物品参数（黑市）")]
+    [SliderConfig("InfoFontSize", "EnhancedItemInfo_Config_FontSize", 15f, 30f, nameof(OnFontSizeValueChanged))]
+    public static float FontSize = 20f;
+    public static event Action<float>? OnFontSizeChanged = null;
+    static void OnFontSizeValueChanged(float fontSize) {
+        OnFontSizeChanged?.Invoke(fontSize);
+    }
+
+    [ToggleConfig("ItemProperties", "EnhancedItemInfo_Config_ItemProperties")]
     public static bool EnableItemProperties = true;
     static FieldInfo? FieldItemProperties = null;
     static Action<ItemPropertiesDisplay, Item>? SetupItemProperties = null;
 
-    public static SidePanel Panel = new("SidePanel");
+    public static SidePanel Panel { get => field ??= new(); } = null;
+
+    public static event Action<ItemHoveringUI, Item>? OnSetupItem = null;
+    public static event Action<ItemHoveringUI, ItemMetaData>? OnSetupMeta = null;
 
     public static void Init() {
         Logger.Info($"{nameof(ItemInfoManager)} is registered");
@@ -42,6 +53,22 @@ internal static class ItemInfoManager {
         else {
             SetupItemProperties = (Action<ItemPropertiesDisplay, Item>)method.CreateDelegate(typeof(Action<ItemPropertiesDisplay, Item>));
         }
+
+        OnSetupItem += ItemCount.Instance.SetupAndShow;
+        OnSetupItem += ItemDurability.Instance.SetupAndShow;
+        OnSetupItem += ItemRequirement.Instance.SetupAndShow;
+        OnSetupItem += ItemWeight.Instance.SetupAndShow;
+        OnSetupItem += ItemValue.Instance.SetupAndShow;
+        OnSetupItem += ItemDecompose.Instance.SetupAndShow;
+        OnSetupItem += ItemDecomposeFrom.Instance.SetupAndShow;
+
+        OnSetupMeta += ItemCount.Instance.SetupAndShow;
+        OnSetupMeta += ItemDurability.Instance.SetupAndShow;
+        OnSetupMeta += ItemRequirement.Instance.SetupAndShow;
+        OnSetupMeta += ItemWeight.Instance.SetupAndShow;
+        OnSetupMeta += ItemValue.Instance.SetupAndShow;
+        OnSetupMeta += ItemDecompose.Instance.SetupAndShow;
+        OnSetupMeta += ItemDecomposeFrom.Instance.SetupAndShow;
     }
     public static void OnSetup() {
         Logger.Info($"{nameof(ItemInfoManager)} is enabled");
@@ -56,28 +83,15 @@ internal static class ItemInfoManager {
         ItemHoveringUI.onSetupMeta -= OnSetupMetaHoveringUI;
     }
 
-    public static void HideAllText() {
-        ItemDecompose.Instance.Hide();
-        ItemValue.Instance.Hide();
-        ItemWeight.Instance.Hide();
-        ItemRequirement.Instance.Hide();
-        ItemDurability.Instance.Hide();
-        ItemCount.Instance.Hide();
-    }
-
     public static void OnSetupMetaHoveringUI(ItemHoveringUI uiInstance, ItemMetaData data) {
-        HideAllText();
-
         Color color = EnableColoredInfo ? data.GetMeta().GetLevelColor().WithAlpha(1f) : Color.white;
         Traverse.Create(uiInstance).Field("itemName").GetValue<TextMeshProUGUI>()?.color = color;
 
-
         if (EnableItemProperties) {
-            do {
-                if (FieldItemProperties == null || SetupItemProperties == null) {
-                    EnableItemProperties = false;
-                    break;
-                }
+            if (FieldItemProperties == null || SetupItemProperties == null) {
+                EnableItemProperties = false;
+            }
+            else {
                 try {
                     var itemProperties = (ItemPropertiesDisplay)FieldItemProperties.GetValue(uiInstance);
                     var prefab = ItemAssetsCollection.GetPrefab(data.id);
@@ -88,22 +102,13 @@ internal static class ItemInfoManager {
                     Logger.Error($"Failed to setup ItemPropertiesDisplay", ex);
                     EnableItemProperties = false;
                 }
-            } while (false);
+            }
         }
 
-        var parent = uiInstance.LayoutParent;
-        ItemCount.Instance.SetupAndShow(parent, data);
-        ItemWeight.Instance.SetupAndShow(parent, data);
-        ItemValue.Instance.SetupAndShow(parent, data);
-
-        var show = false;
-        show |= ItemRequirement.Instance.SetupAndShow(Panel.LayoutParent, data);
-        show |= ItemDecompose.Instance.SetupAndShow(Panel.LayoutParent, data);
-        Panel.SetActive(show);
-
+        Panel.Hide();
+        OnSetupMeta?.Invoke(uiInstance, data);
     }
     public static void OnSetupItemHoveringUI(ItemHoveringUI uiInstance, Item? item) {
-        HideAllText();
         if (item == null) {
             return;
         }
@@ -111,15 +116,7 @@ internal static class ItemInfoManager {
         Color color = EnableColoredInfo ? item.GetMeta().GetLevelColor().WithAlpha(1f) : Color.white;
         Traverse.Create(uiInstance).Field("itemName").GetValue<TextMeshProUGUI>()?.color = color;
 
-        var parent = uiInstance.LayoutParent;
-        ItemCount.Instance.SetupAndShow(parent, item);
-        ItemDurability.Instance.SetupAndShow(parent, item);
-        ItemWeight.Instance.SetupAndShow(parent, item);
-        ItemValue.Instance.SetupAndShow(parent, item);
-
-        var show = false;
-        show |= ItemRequirement.Instance.SetupAndShow(Panel.LayoutParent, item);
-        show |= ItemDecompose.Instance.SetupAndShow(Panel.LayoutParent, item);
-        Panel.SetActive(show);
+        Panel.Hide();
+        OnSetupItem?.Invoke(uiInstance, item);
     }
 }

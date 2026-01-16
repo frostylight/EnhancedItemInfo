@@ -1,4 +1,6 @@
 using EnhancedItemInfo.Attributes;
+using EnhancedItemInfo.Config.ConfigItem;
+using EnhancedItemInfo.Localization;
 using EnhancedItemInfo.Utils;
 using ItemStatsSystem;
 using System.Linq;
@@ -6,10 +8,12 @@ using System.Text;
 
 namespace EnhancedItemInfo.Core.ItemInfo;
 
+[ConfigGroup("ItemInfo")]
 internal class ItemRequirement: ItemInfoUI<ItemRequirement> {
-    [ToggleConfig("ItemRequirement", "物品需求")]
-    public static bool enable = true;
-    protected override bool Enable => enable;
+    [PlacementConfig("ItemRequirement", "EnhancedItemInfo_Config_ItemRequirement")]
+    public static FeaturePlacement placement = FeaturePlacement.Main;
+    protected override bool Enable => placement != FeaturePlacement.None;
+    protected override bool Side => placement == FeaturePlacement.Side;
 
     public static ItemRequirement Instance { get => field ??= new(); } = null;
 
@@ -27,10 +31,10 @@ internal class ItemRequirement: ItemInfoUI<ItemRequirement> {
             return false;
         }
         Counter.Clear();
-        Counter.SetPrefix($"需求 {total}")
-            .AddPart("任务", questTotal)
-            .AddPart("强化", perkTotal)
-            .AddPart("建筑", buildingTotal);
+        Counter.SetPrefix($"{Localizations.EnhancedItemInfo_Require} {total}")
+            .AddPart(Localizations.UI_Quest, questTotal)
+            .AddPart(Localizations.EnhancedItemInfo_Perk, perkTotal)
+            .AddPart(Localizations.EnhancedItemInfo_Building, buildingTotal);
         StringBuilder stringBuilder = new();
         stringBuilder.AppendLine(Counter.ToString());
         int questCount = 0;
@@ -39,7 +43,7 @@ internal class ItemRequirement: ItemInfoUI<ItemRequirement> {
                 stringBuilder.AppendLine($"<indent=1em>...</indent>");
                 break;
             }
-            stringBuilder.AppendLine($"<indent=1em>x{count} 任务.{Name}</indent>");
+            stringBuilder.AppendLine($"<indent=1em>x{count} {Localizations.UI_Quest}.{Name}</indent>");
             questCount++;
         }
         int perkCount = 0;
@@ -57,7 +61,7 @@ internal class ItemRequirement: ItemInfoUI<ItemRequirement> {
                 stringBuilder.AppendLine($"<indent=1em>...</indent>");
                 break;
             }
-            stringBuilder.AppendLine($"<indent=1em>x{Amount} 建筑.{Name}</indent>");
+            stringBuilder.AppendLine($"<indent=1em>x{Amount} {Localizations.EnhancedItemInfo_Building}.{Name}</indent>");
             buildingCount++;
         }
         SetText(stringBuilder.ToString());

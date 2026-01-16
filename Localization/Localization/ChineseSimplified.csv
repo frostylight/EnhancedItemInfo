@@ -1,0 +1,43 @@
+key, value
+EnhancedItemInfo_Config_RegisteredMark, 录入标识
+EnhancedItemInfo_Config_ItemLevel, 稀有度显示
+EnhancedItemInfo_Config_ColoredInfo, 物品信息颜色
+EnhancedItemInfo_Config_ItemProperties, 显示物品参数（黑市）
+EnhancedItemInfo_Config_ItemCount, 物品已有数量
+EnhancedItemInfo_Config_ItemDecompose, 物品分解信息
+EnhancedItemInfo_Config_ItemDecomposeFrom, 物品分解来源
+EnhancedItemInfo_Config_ItemDurability, 物品耐久
+EnhancedItemInfo_Config_ItemAvailableCount, 物品可用次数
+EnhancedItemInfo_Config_ItemValue, 物品价值
+EnhancedItemInfo_Config_ItemWeight, 物品重量
+EnhancedItemInfo_Config_CashDisplay, 在余额旁显示现金
+EnhancedItemInfo_Config_ItemRequirement, 物品需求
+EnhancedItemInfo_Config_FontSize, 字体大小
+EnhancedItemInfo_Config_ItemInfo, 物品信息
+
+Usage_Durability,
+
+; $UI_RequireItem {totalAmount} = $UI_Quest {questAmount} + $EnhancedItemInfo_Perk {perkAmount} + $EnhancedItemInfo_Building {buildingAmount}
+EnhancedItemInfo_Require, 需求
+UI_Quest,
+EnhancedItemInfo_Perk, 强化
+EnhancedItemInfo_Building, 建筑
+
+; $EnhancedItemInfo_Having {totalAmount} = $UI_Inventory_Storage {inStorage} + $UI_Inventory_Backpack {inBackpack} + $UI_LootBox_Safe {onPet}
+EnhancedItemInfo_Having, 已有
+UI_Inventory_Storage,
+UI_Inventory_Backpack,
+UI_LootBox_Safe,
+
+UI_ItemDecompose,
+EnhancedItemInfo_ItemDecomposeFrom, 从以下物品分解得到
+
+; $EnhancedItemInfo_Durability {currentDurability} / {durabilityLimit}
+EnhancedItemInfo_Durability, 耐久
+; $EnhancedItemInfo_AvailableCount {avaiableCount} / {maxCount}
+EnhancedItemInfo_PredictedAvailableCount, 预估可用次数
+EnhancedItemInfo_AvailableCount, 可用次数
+
+EnhancedItemInfo_TotalWeight, 总重
+EnhancedItemInfo_SelfWeight, 自重
+EnhancedItemInfo_UnitWeight, 单位重量

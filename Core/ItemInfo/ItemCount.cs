@@ -1,13 +1,17 @@
 using EnhancedItemInfo.Attributes;
+using EnhancedItemInfo.Config.ConfigItem;
+using EnhancedItemInfo.Localization;
 using EnhancedItemInfo.Utils;
 using ItemStatsSystem;
 
 namespace EnhancedItemInfo.Core.ItemInfo;
 
+[ConfigGroup("ItemInfo")]
 internal class ItemCount: ItemInfoUI<ItemCount> {
-    [ToggleConfig("ItemCount", "物品已有数量")]
-    public static bool enable = true;
-    protected override bool Enable => enable;
+    [PlacementConfig("ItemCount", "EnhancedItemInfo_Config_ItemCount")]
+    public static FeaturePlacement placement = FeaturePlacement.Main;
+    protected override bool Enable => placement != FeaturePlacement.None;
+    protected override bool Side => placement == FeaturePlacement.Side;
 
     public static ItemCount Instance { get => field ??= new(); } = null;
 
@@ -20,10 +24,10 @@ internal class ItemCount: ItemInfoUI<ItemCount> {
             return false;
         }
         Counter.Clear();
-        Counter.SetPrefix($"已有 {total}")
-            .AddPart("仓库", inStorage)
-            .AddPart("背包", onPlayer)
-            .AddPart("宠物", onPet);
+        Counter.SetPrefix($"{Localizations.EnhancedItemInfo_Having} {total}")
+            .AddPart(Localizations.UI_Inventory_Storage, inStorage)
+            .AddPart(Localizations.UI_Inventory_Backpack, onPlayer)
+            .AddPart(Localizations.UI_LootBox_Safe, onPet);
         SetText(Counter.ToString());
         return true;
     }

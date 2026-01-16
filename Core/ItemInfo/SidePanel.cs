@@ -34,7 +34,6 @@ internal class SidePanel(string name = "SidePanel") {
 
         panel.AddComponent<CanvasRenderer>();
 
-
         var image = panel.AddComponent<Image>();
         var oriImage = layout.GetComponent<Image>();
         image.color = oriImage.color;
@@ -49,9 +48,18 @@ internal class SidePanel(string name = "SidePanel") {
         vlg.childForceExpandWidth = oriVlg.childForceExpandWidth;
         vlg.childForceExpandHeight = oriVlg.childForceExpandHeight;
 
-        // 插到原来侧边栏左侧
-        panel.transform.SetParent(content, false);
-        panel.transform.SetSiblingIndex(layout.GetSiblingIndex() + 1);
+        var column = content.Find("Colomn2");
+        if (column != null) {
+            Logger.Debug($"Colomn2!");
+            panel.transform.SetParent(column, false);
+            // 插到侧边栏上面
+            panel.transform.SetAsFirstSibling();
+        }
+        else {
+            panel.transform.SetParent(content, false);
+            // 插到原来侧边栏左侧
+            panel.transform.SetSiblingIndex(layout.GetSiblingIndex() + 1);
+        }
         panel.SetActive(true);
         return panel;
     }

@@ -1,12 +1,15 @@
 using EnhancedItemInfo.Attributes;
+using EnhancedItemInfo.Config.ConfigItem;
 using ItemStatsSystem;
 
 namespace EnhancedItemInfo.Core.ItemInfo;
 
+[ConfigGroup("ItemInfo")]
 internal class ItemValue: ItemInfoUI<ItemValue> {
-    [ToggleConfig("ItemValue", "物品价值")]
-    public static bool enable = true;
-    protected override bool Enable => enable;
+    [PlacementConfig("ItemValue", "EnhancedItemInfo_Config_ItemValue")]
+    public static FeaturePlacement placement = FeaturePlacement.Main;
+    protected override bool Enable => placement != FeaturePlacement.None;
+    protected override bool Side => placement == FeaturePlacement.Side;
 
     public static ItemValue Instance { get => field ??= new(); } = null;
 

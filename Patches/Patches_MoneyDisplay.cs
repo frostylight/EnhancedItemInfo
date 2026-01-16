@@ -15,7 +15,7 @@ namespace EnhancedItemInfo.Patches;
 [Patch]
 [HarmonyPatch(typeof(MoneyDisplay))]
 internal static class Patches_MoneyDisplay {
-    [ToggleConfig("CashDisplay", "在余额旁显示现金")]
+    [ToggleConfig("CashDisplay", "EnhancedItemInfo_Config_CashDisplay")]
     public static bool Enable = true;
 
     public static Dictionary<Item, int> CashCache = [];

@@ -1,0 +1,43 @@
+key, value
+EnhancedItemInfo_Config_RegisteredMark, Registration Marker
+EnhancedItemInfo_Config_ItemLevel, Rarity Display
+EnhancedItemInfo_Config_ColoredInfo, Colored Item Information
+EnhancedItemInfo_Config_ItemProperties, Show Item Properties (Black Market)
+EnhancedItemInfo_Config_ItemCount, Owned Item Count
+EnhancedItemInfo_Config_ItemDecompose, Item Decomposition Info
+EnhancedItemInfo_Config_ItemDecomposeFrom, Item Decomposition Sources
+EnhancedItemInfo_Config_ItemDurability, Item Durability
+EnhancedItemInfo_Config_ItemAvailableCount, Item Available Uses
+EnhancedItemInfo_Config_ItemValue, Item Value
+EnhancedItemInfo_Config_ItemWeight, Item Weight
+EnhancedItemInfo_Config_CashDisplay, Show Cash Next to Balance
+EnhancedItemInfo_Config_ItemRequirement, Item Requirements
+EnhancedItemInfo_Config_FontSize, Font Size
+EnhancedItemInfo_Config_ItemInfo, Item Information
+
+Usage_Durability,
+
+; $UI_RequireItem {totalAmount} = $UI_Quest {questAmount} + $EnhancedItemInfo_Perk {perkAmount} + $EnhancedItemInfo_Building {buildingAmount}
+EnhancedItemInfo_Require, Requirements
+UI_Quest,
+EnhancedItemInfo_Perk, Perks
+EnhancedItemInfo_Building, Buildings
+
+; $EnhancedItemInfo_Having {totalAmount} = $UI_Inventory_Storage {inStorage} + $UI_Inventory_Backpack {inBackpack} + $UI_LootBox_Safe {onPet}
+EnhancedItemInfo_Having, Owned
+UI_Inventory_Storage,
+UI_Inventory_Backpack,
+UI_LootBox_Safe,
+
+UI_ItemDecompose,
+EnhancedItemInfo_ItemDecomposeFrom, decomposed from
+
+; $EnhancedItemInfo_Durability {currentDurability} / {durabilityLimit}
+EnhancedItemInfo_Durability, Durability
+; $EnhancedItemInfo_AvailableCount {avaiableCount} / {maxCount}
+EnhancedItemInfo_PredictedAvailableCount, Estimated Available
+EnhancedItemInfo_AvailableCount, Available
+
+EnhancedItemInfo_TotalWeight, Total
+EnhancedItemInfo_SelfWeight, Self
+EnhancedItemInfo_UnitWeight, Unit

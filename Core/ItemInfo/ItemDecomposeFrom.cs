@@ -8,26 +8,30 @@ using System.Text;
 namespace EnhancedItemInfo.Core.ItemInfo;
 
 [ConfigGroup("ItemInfo")]
-internal class ItemDecompose: ItemInfoUI<ItemDecompose> {
-    [PlacementConfig("ItemDecompose", "EnhancedItemInfo_Config_ItemDecompose")]
+internal class ItemDecomposeFrom: ItemInfoUI<ItemDecompose> {
+    [PlacementConfig("ItemDecomposeFrom", "EnhancedItemInfo_Config_ItemDecomposeFrom")]
     public static FeaturePlacement placement = FeaturePlacement.Main;
     protected override bool Enable => placement != FeaturePlacement.None;
     protected override bool Side => placement == FeaturePlacement.Side;
 
-    public static ItemDecompose Instance { get => field ??= new(); } = null;
+    public static ItemDecomposeFrom Instance { get => field ??= new(); } = null;
 
     bool Setup(int typeID) {
-        var decomposeItems = ItemUtils.GetDecomposeItems(typeID);
-        if (decomposeItems.Length == 0) {
+        var set = ItemUtils.GetDecomposeFromItems(typeID);
+        if (set.Count == 0) {
             return false;
         }
         StringBuilder stringBuilder = new();
-        if (decomposeItems.Length > 0) {
-            stringBuilder.Append(Localizations.UI_ItemDecompose + ":\n");
-            foreach (var entry in decomposeItems) {
-                var itemMetaData = ItemAssetsCollection.GetMetaData(entry.id);
-                stringBuilder.AppendLine($"<indent=1em>{entry.amount}x {itemMetaData.DisplayName}</indent>");
+        stringBuilder.Append(Localizations.EnhancedItemInfo_ItemDecomposeFrom + ":\n");
+        int count = 0;
+        foreach (var (fromItem, amount) in set) {
+            if (count >= 5) { // TODO 配置最大显示数量
+                stringBuilder.AppendLine($"<indent=1em>...</indent>");
+                break;
             }
+            var itemMetaData = ItemAssetsCollection.GetMetaData(fromItem);
+            stringBuilder.AppendLine($"<indent=1em>x{amount} {itemMetaData.DisplayName}</indent>");
+            ++count;
         }
         SetText(stringBuilder.ToString());
         return true;

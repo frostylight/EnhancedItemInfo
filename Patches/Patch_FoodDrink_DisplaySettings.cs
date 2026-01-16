@@ -1,8 +1,7 @@
 using Duckov.ItemUsage;
 using EnhancedItemInfo.Attributes;
-using EnhancedItemInfo.Core;
+using EnhancedItemInfo.Localization;
 using HarmonyLib;
-using SodaCraft.Localizations;
 
 namespace EnhancedItemInfo.Patches;
 
@@ -13,6 +12,6 @@ internal class Patch_FoodDrink_DisplaySettings {
         if (__instance.UseDurability == 0) {
             return;
         }
-        __result.description += $" ({Constant.durabilityUsageDescriptionKey.ToPlainText()} : {__instance.UseDurability:0.##})";
+        __result.description += $" ({Localizations.Usage_Durability} : {__instance.UseDurability:0.##})";
     }
 }

@@ -16,6 +16,7 @@
 		<ModVersionFile>$(ProjectDir)Core\VersionInfo.cs</ModVersionFile>
 		<ModLocalDir>$(ProjectDir)$(ModName)</ModLocalDir>
 		<ModGameDir>$(DuckovModPath)$(ModName)</ModGameDir>
+		<LocalizationDir>$(ProjectDir)Localization</LocalizationDir>
 
 	</PropertyGroup>
 	
@@ -55,6 +56,7 @@
 	
 	<ItemGroup>
 	  <Folder Include="EnhancedItemInfo\" />
+	  <Folder Include="Localization\Localization\" />
 	</ItemGroup>
 
 	<!-- 以下复制自JMCLib模板 -->
@@ -131,6 +133,21 @@
 		<Message Text="开始复制 mod 文件..." Importance="High" />
 		<Message Text="🔧 ForceCopy = $(ForceCopy)" Importance="High" />
 		<Exec Command="robocopy &quot;$(ModLocalDir)&quot; &quot;$(ModGameDir)&quot; $(RoboArgs)" ConsoleToMSBuild="true" IgnoreExitCode="true" StandardOutputImportance="High">
+			<Output TaskParameter="ExitCode" PropertyName="RoboExitCode" />
+		</Exec>
+
+		<!--  处理 robocopy 的返回码，容忍 0–3 -->
+		<Message Text="Robocopy 退出代码: $(RoboExitCode)" Importance="High" />
+		<Error Condition="$(RoboExitCode) &gt; 3" Text="❌ Robocopy 复制失败（代码 $(RoboExitCode)）！" />
+
+		<!--  成功提示 -->
+		<Message Condition="$(RoboExitCode) == 0" Text="✅ 没有需要更新的文件，一切都是最新的。" Importance="High" />
+		<Message Condition="$(RoboExitCode) == 1" Text="📁 已复制新的文件。" Importance="High" />
+		<Message Condition="$(RoboExitCode) == 2" Text="📝 文件属性已更新。" Importance="High" />
+		<Message Condition="$(RoboExitCode) == 3" Text="🔄 文件和属性都有更新。" Importance="High" />
+
+		<Message Text="开始复制本地化翻译文件..." Importance="High" />
+		<Exec Command="robocopy &quot;$(LocalizationDir)\Localization&quot; &quot;$(ModGameDir)\Localization&quot; $(RoboArgs)" ConsoleToMSBuild="true" IgnoreExitCode="true" StandardOutputImportance="High">
 			<Output TaskParameter="ExitCode" PropertyName="RoboExitCode" />
 		</Exec>
 

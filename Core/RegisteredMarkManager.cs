@@ -10,7 +10,7 @@ namespace EnhancedItemInfo.Core;
 
 [NeedSetup]
 internal static class RegisteredMarkManager {
-    [ToggleConfig("RegisteredMark", "录入标识")]
+    [ToggleConfig("RegisteredMark", "EnhancedItemInfo_Config_RegisteredMark")]
     public static bool Enable = true;
 
     public static void Init() {
@@ -97,12 +97,7 @@ internal static class RegisteredMarkManager {
     }
 
     public static void OnItemDisplayReset(ItemDisplay itemDisplay) {
-        var background = itemDisplay.transform?.Find("BG");
-        if (background == null) {
-            Logger.Warn($"Null background of {itemDisplay.name}");
-            return;
-        }
-        HideMark(background);
+        HideMark(itemDisplay.transform);
     }
     public static void OnItemDisplayShow(ItemDisplay itemDisplay) {
         if (!Enable) {
@@ -113,29 +108,18 @@ internal static class RegisteredMarkManager {
             OnItemDisplayReset(itemDisplay);
             return;
         }
-        var background = itemDisplay.transform?.Find("BG");
-        if (background == null) {
-            Logger.Warn($"Null background of {itemDisplay.name}");
-            return;
-        }
-        SetupAndShow(background);
+        SetupAndShow(itemDisplay.transform);
     }
     public static void OnItemMetaDisplayShow(ItemMetaDisplay itemMetaDisplay) {
-
-        var background = itemMetaDisplay.transform?.Find("BG");
-        if (background == null) {
-            Logger.Warn($"Null background of {itemMetaDisplay.name}");
-            return;
-        }
         if (!Enable) {
-            HideMark(background);
+            HideMark(itemMetaDisplay.transform);
             return;
         }
         if (!itemMetaDisplay.GetMetaData().IsRegistered()) {
-            HideMark(background);
+            HideMark(itemMetaDisplay.transform);
             return;
         }
-        SetupAndShow(background);
+        SetupAndShow(itemMetaDisplay.transform);
     }
     public static void OnItemAmountDisplayShow(ItemAmountDisplay itemAmountDisplay) {
         var icon = itemAmountDisplay.transform?.Find("Icon");

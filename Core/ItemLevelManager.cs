@@ -10,7 +10,7 @@ namespace EnhancedItemInfo.Core;
 
 [NeedSetup]
 internal static class ItemLevelManager {
-    [ToggleConfig("ItemLevel", "稀有度显示")]
+    [ToggleConfig("ItemLevel", "EnhancedItemInfo_Config_ItemLevel")]
     public static bool Enable = true;
 
     public static void Init() {

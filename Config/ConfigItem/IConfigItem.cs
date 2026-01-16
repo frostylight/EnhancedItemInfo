@@ -9,10 +9,8 @@ internal interface IConfigItem {
     public string Description { get; }
 
     public Type ValueType { get; }
-    public object? GetValue();
-    public void SetValue(object? value);
-
-    public void CallbackObject(object? value);
+    public object GetValue();
+    public void SetValue(object value);
 
     public int GetHashCode() => Key.GetHashCode();
 }
