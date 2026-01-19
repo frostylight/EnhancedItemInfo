@@ -6,7 +6,7 @@ using ItemStatsSystem;
 namespace EnhancedItemInfo.Core.ItemInfo;
 
 [ConfigGroup("ItemInfo")]
-internal class ItemDurability: ItemInfoUI<ItemDurability> {
+internal class ItemDurability: ItemInfoUI {
     [PlacementConfig("ItemDurability", "EnhancedItemInfo_Config_ItemDurability")]
     public static FeaturePlacement placement = FeaturePlacement.Main;
     protected override bool Enable => placement != FeaturePlacement.None;

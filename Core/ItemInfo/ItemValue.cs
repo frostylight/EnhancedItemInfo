@@ -5,7 +5,7 @@ using ItemStatsSystem;
 namespace EnhancedItemInfo.Core.ItemInfo;
 
 [ConfigGroup("ItemInfo")]
-internal class ItemValue: ItemInfoUI<ItemValue> {
+internal class ItemValue: ItemInfoUI {
     [PlacementConfig("ItemValue", "EnhancedItemInfo_Config_ItemValue")]
     public static FeaturePlacement placement = FeaturePlacement.Main;
     protected override bool Enable => placement != FeaturePlacement.None;

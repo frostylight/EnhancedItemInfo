@@ -8,7 +8,7 @@ using System.Text;
 namespace EnhancedItemInfo.Core.ItemInfo;
 
 [ConfigGroup("ItemInfo")]
-internal class ItemDecompose: ItemInfoUI<ItemDecompose> {
+internal class ItemDecompose: ItemInfoUI {
     [PlacementConfig("ItemDecompose", "EnhancedItemInfo_Config_ItemDecompose")]
     public static FeaturePlacement placement = FeaturePlacement.Main;
     protected override bool Enable => placement != FeaturePlacement.None;

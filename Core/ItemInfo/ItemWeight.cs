@@ -6,7 +6,7 @@ using ItemStatsSystem;
 namespace EnhancedItemInfo.Core.ItemInfo;
 
 [ConfigGroup("ItemInfo")]
-internal class ItemWeight: ItemInfoUI<ItemWeight> {
+internal class ItemWeight: ItemInfoUI {
     [PlacementConfig("ItemWeight", "EnhancedItemInfo_Config_ItemWeight")]
     public static FeaturePlacement placement = FeaturePlacement.Main;
     protected override bool Enable => placement != FeaturePlacement.None;

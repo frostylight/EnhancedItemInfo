@@ -9,7 +9,7 @@ using UnityEngine;
 namespace EnhancedItemInfo.Core.ItemInfo;
 
 [ConfigGroup("ItemInfo")]
-internal class ItemAvailableCount: ItemInfoUI<ItemDurability> {
+internal class ItemAvailableCount: ItemInfoUI {
     [PlacementConfig("ItemAvailableCount", "EnhancedItemInfo_Config_ItemAvailableCount")]
     public static FeaturePlacement placement = FeaturePlacement.Main;
     protected override bool Enable => placement != FeaturePlacement.None;

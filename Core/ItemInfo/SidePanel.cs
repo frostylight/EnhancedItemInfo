@@ -30,7 +30,9 @@ internal class SidePanel(string name = "SidePanel") {
             return panel;
         }
         var layout = ui.LayoutParent;
+        ListComponents(layout.gameObject);
         var content = layout.parent;
+        ListComponents(content.gameObject);
 
         panel.AddComponent<CanvasRenderer>();
 
@@ -50,6 +52,7 @@ internal class SidePanel(string name = "SidePanel") {
 
         var column = content.Find("Colomn2");
         if (column != null) {
+            ListComponents(column.gameObject);
             Logger.Debug($"Colomn2!");
             panel.transform.SetParent(column, false);
             // 插到侧边栏上面
@@ -73,6 +76,7 @@ internal class SidePanel(string name = "SidePanel") {
         Panel?.SetActive(active);
     }
     public static void ListComponents(GameObject gameObject, int indent = 0) {
+#if DEBUG
         StringBuilder stringBuilder = new();
         for (int j = 0; j < indent; j++) { stringBuilder.Append("\t"); }
         Logger.Debug($"{stringBuilder}Component of {gameObject.name}");
@@ -82,5 +86,6 @@ internal class SidePanel(string name = "SidePanel") {
             var com = gameObject.GetComponentAtIndex(i);
             Logger.Debug($"{stringBuilder} {i} -> {com.GetType()}");
         }
+#endif
     }
 }

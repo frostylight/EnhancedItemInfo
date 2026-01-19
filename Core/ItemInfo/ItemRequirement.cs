@@ -9,7 +9,7 @@ using System.Text;
 namespace EnhancedItemInfo.Core.ItemInfo;
 
 [ConfigGroup("ItemInfo")]
-internal class ItemRequirement: ItemInfoUI<ItemRequirement> {
+internal class ItemRequirement: ItemInfoUI {
     [PlacementConfig("ItemRequirement", "EnhancedItemInfo_Config_ItemRequirement")]
     public static FeaturePlacement placement = FeaturePlacement.Main;
     protected override bool Enable => placement != FeaturePlacement.None;

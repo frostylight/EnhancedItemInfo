@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace EnhancedItemInfo.Core.ItemInfo;
 
-internal abstract class ItemInfoUI<T> where T : ItemInfoUI<T> {
+internal abstract class ItemInfoUI {
     TextMeshProUGUI? _text = null;
     protected TextMeshProUGUI Text {
         get {
@@ -26,7 +26,6 @@ internal abstract class ItemInfoUI<T> where T : ItemInfoUI<T> {
     protected virtual bool Enable => true;
     protected virtual bool ColoredInfo => ItemInfoManager.EnableColoredInfo;
     protected virtual bool Side => false;
-    protected T Self => (T)this;
     protected ItemInfoUI() {
         ItemInfoManager.OnFontSizeChanged += OnFontSizeChange;
     }
@@ -78,47 +77,38 @@ internal abstract class ItemInfoUI<T> where T : ItemInfoUI<T> {
         }
     }
 
-    public T Hide() {
+    public void Hide() {
         if (Instantiated) {
             Text.gameObject.SetActive(false);
         }
-        return Self;
     }
-    public T Show() {
+    public void Show() {
         Text.gameObject.SetActive(true);
-        return Self;
     }
-    protected T SetParent(Transform parent, bool worldPositionStays = true) {
+    protected void SetParent(Transform parent, bool worldPositionStays = true) {
         Text.transform.SetParent(parent, worldPositionStays);
-        return Self;
     }
-    protected T SetAsLastSibling() {
+    protected void SetAsLastSibling() {
         Text.transform.SetAsLastSibling();
-        return Self;
     }
-    protected T SetColor(Color color) {
+    protected void SetColor(Color color) {
         Text.color = color;
-        return Self;
     }
-    protected T SetText(string text) {
+    protected void SetText(string text) {
         Text.text = text;
-        return Self;
     }
-    protected T AppendText(string text) {
+    protected void AppendText(string text) {
         Text.text += text;
-        return Self;
     }
-    protected T AppendTextIf(bool condition, string text) {
+    protected void AppendTextIf(bool condition, string text) {
         if (condition) {
-            return AppendText(text);
+            AppendText(text);
         }
-        return Self;
     }
-    protected T SetFontSize(float fontSize) {
+    protected void SetFontSize(float fontSize) {
         if (Instantiated) {
             Text.fontSize = fontSize;
         }
-        return Self;
     }
 
     public virtual void Destroy() {
